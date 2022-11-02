@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../components/Button";
 import Input from "../components/Input";
-import { cls } from "../libs/utils";
+import useMutation from "../libs/client/useMutaion";
+import { cls } from "../libs/client/utils";
 import Layout from "./../components/Layout";
 import getEnter from "./api/users/enter";
 
@@ -20,6 +21,7 @@ const Enter: NextPage = () => {
     watch,
     formState: { errors },
   } = useForm<EnterForm>();
+  const [enter, { loading, data, error }] = useMutation("/api/users/enter");
   const [method, setMethod] = useState<"email" | "phone">("email");
   const onEmailClick = () => {
     reset();
@@ -29,18 +31,11 @@ const Enter: NextPage = () => {
     reset();
     setMethod("phone");
   };
-  const onValid = (data: EnterForm) => {
+  const onValid = (validForm: EnterForm) => {
     reset();
-    console.log("입력완료", data);
-    fetch("/api/users/enter", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    enter(validForm);
   };
-  console.log(watch());
+  console.log(loading, data, error);
 
   return (
     <Layout hasTabBar>
