@@ -28,7 +28,7 @@ async function getEnter(req: NextApiRequest, res: NextApiResponse<ResponseType>)
     const mailOptions = {
       from: process.env.MAIL_ID,
       to: email,
-      subject: "호성마켓 회원가입 인증요청",
+      subject: "호성마켓 로그인 인증요청",
       text: `인증코드 : ${payload}`,
     };
     const result = await smtpTransport.sendMail(mailOptions, (error, responses) => {
