@@ -3,9 +3,9 @@ import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
 import smtpTransport from "@libs/server/email";
 
-async function getEnter(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const { email, phone } = req.body;
-  const user = phone ? { phone: +phone } : email ? { email } : null;
+  const user = phone ? { phone } : email ? { email } : null;
   if (!user) return res.status(400).json({ ok: false });
   const payload = Math.floor(10000 + Math.random() * 900000) + "";
   const token = await client.token.create({
@@ -28,7 +28,7 @@ async function getEnter(req: NextApiRequest, res: NextApiResponse<ResponseType>)
     const mailOptions = {
       from: process.env.MAIL_ID,
       to: email,
-      subject: "호성마켓 회원가입 인증요청",
+      subject: "호성마켓 로그인 인증요청",
       text: `인증코드 : ${payload}`,
     };
     const result = await smtpTransport.sendMail(mailOptions, (error, responses) => {
@@ -46,6 +46,7 @@ async function getEnter(req: NextApiRequest, res: NextApiResponse<ResponseType>)
   console.log(token);
   return res.json({
     ok: true,
+    user,
   });
 }
-export default withHandler("POST", getEnter);
+export default withHandler("POST", handler);

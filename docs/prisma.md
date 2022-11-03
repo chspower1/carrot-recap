@@ -16,3 +16,7 @@ await client.user.upsert({
   update: {},
 });
 ```
+
+## onDelete:Cascade
+
+relation 관계일 때 해당 prop이 삭제되면 같이 삭제하는 옵션
