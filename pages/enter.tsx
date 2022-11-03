@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "@components/Button";
 import Input from "@components/Input";
@@ -7,6 +7,7 @@ import useMutation from "@libs/client/useMutaion";
 import { cls } from "@libs/client/utils";
 import Layout from "@components/Layout";
 import getEnter from "@api/users/enter";
+import { useRouter } from "next/router";
 
 interface EnterForm {
   email?: string;
@@ -35,6 +36,7 @@ const Enter: NextPage = () => {
   const [confirmToken, { loading: tokenLoading, data: tokenData, error: tokenError }] =
     useMutation<EnterMutationResult>("/api/users/confirm");
   const [method, setMethod] = useState<"email" | "phone">("email");
+  const router = useRouter();
   const handleClickMethod = () => {
     reset();
     setMethod(method === "email" ? "phone" : "email");
@@ -43,11 +45,15 @@ const Enter: NextPage = () => {
     reset();
     enter(enterForm);
   };
-  const OnTokenValid = (tokenForm: TokenForm) => {
+  const onTokenValid = (tokenForm: TokenForm) => {
     confirmToken(tokenForm);
     reset();
   };
-
+  useEffect(() => {
+    if (tokenData?.ok) {
+      router.push("/");
+    }
+  }, [tokenData, router]);
   return (
     <Layout hasTabBar>
       <div className="mt-16 px-4">
@@ -55,7 +61,7 @@ const Enter: NextPage = () => {
         <div className="mt-12">
           {data?.ok ? (
             <form
-              onSubmit={tokenHandleSubmit(OnTokenValid)}
+              onSubmit={tokenHandleSubmit(onTokenValid)}
               className="flex flex-col mt-8 space-y-4"
             >
               <Input
