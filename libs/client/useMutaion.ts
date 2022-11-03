@@ -24,7 +24,7 @@ export default function useMutation<T = any>(url: string): UseMutationResult<T> 
         },
         body: JSON.stringify(data),
       });
-      setState((prev) => ({ ...prev, data: result }));
+      setState((prev) => ({ ...prev, data: result as any }));
     } catch (error) {
       setState((prev) => ({ ...prev, error }));
     } finally {
