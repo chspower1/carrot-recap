@@ -1,12 +1,27 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
+import { withIronSessionApiRoute } from "iron-session/next";
 import client from "@libs/server/client";
-import smtpTransport from "@libs/server/email";
 
 async function Confirm(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const { token } = req.body;
-  if (!token) return res.status(400).json({ ok: false });
-  console.log(token);
+  const exits = await client.token.findUnique({
+    where: {
+      payload: token,
+    },
+    include: {
+      user: true,
+    },
+  });
+  if (!exits) return res.status(400).end();
+  req.session.user = {
+    id: exits.userId,
+  };
+  await req.session.save();
   return res.status(200).end();
 }
-export default withHandler("POST", Confirm);
+export default withIronSessionApiRoute(withHandler("POST", Confirm), {
+  cookieName: "carrotsession",
+  password:
+    "2r1fk4hf1k4hfk31h4fk3lv1g3f4kfjh123lf4khk1g342fkl1g45klkjlklhkkjbbjkaawerWDFCFGC234fl1g24",
+});

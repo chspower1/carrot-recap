@@ -9,3 +9,17 @@
 5. Token이 있는지 확인
 6. 해당 Token을 가지고 있는 유저의 정보를 넘겨줌
 7. 로그인 완료
+
+## 인증방법은 Iron Session
+
+### Iron Session?
+
+:서명,암호화된 쿠키를 사용하는 NodeJS stateless session utility
+
+JWT와 차이점  
+: JWT는 서명, Iron Session은 유저 정보를 암호화 해서 쿠키로 전송
+
+### 장점
+
+1. JWT가 아님, 모든 정보를 암호화 했기 때문에 유저의 어떠한 정보도 확인 할 수 없음.
+2. Session을 위한 백엔드 서버를 구축할 필요가 없음.
