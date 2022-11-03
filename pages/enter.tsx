@@ -32,6 +32,8 @@ const Enter: NextPage = () => {
     formState: { errors: tokenErrors },
   } = useForm<TokenForm>();
   const [enter, { loading, data, error }] = useMutation<EnterMutationResult>("/api/users/enter");
+  const [confirmToken, { loading: tokenLoading, data: tokenData, error: tokenError }] =
+    useMutation<EnterMutationResult>("/api/users/confirm");
   const [method, setMethod] = useState<"email" | "phone">("email");
   const handleClickMethod = () => {
     reset();
@@ -41,10 +43,10 @@ const Enter: NextPage = () => {
     reset();
     enter(enterForm);
   };
-  const tokenOnValid = (tokenForm: TokenForm) => {
+  const OnTokenValid = (tokenForm: TokenForm) => {
+    confirmToken(tokenForm);
     reset();
   };
-  console.log(data);
 
   return (
     <Layout hasTabBar>
@@ -53,7 +55,7 @@ const Enter: NextPage = () => {
         <div className="mt-12">
           {data?.ok ? (
             <form
-              onSubmit={tokenHandleSubmit(tokenOnValid)}
+              onSubmit={tokenHandleSubmit(OnTokenValid)}
               className="flex flex-col mt-8 space-y-4"
             >
               <Input
@@ -65,7 +67,7 @@ const Enter: NextPage = () => {
                 type="text"
                 placeholder={tokenErrors.token?.message}
               />
-              <Button text={loading ? "Loading" : "Get auth Token"} />
+              <Button text={tokenLoading ? "Loading" : "Get auth Token"} />
             </form>
           ) : (
             <>
