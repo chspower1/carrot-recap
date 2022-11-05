@@ -19,12 +19,12 @@ export default function useMutation<T = any>(url: string): UseMutationResult<T> 
       setState((prev) => ({ ...prev, loading: true }));
       const result = await fetch(url, {
         method: "POST",
+        body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
       });
-      setState((prev) => ({ ...prev, data: result as any }));
+      setState((prev) => ({ ...prev, data: result }));
     } catch (error) {
       setState((prev) => ({ ...prev, error }));
     } finally {

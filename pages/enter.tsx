@@ -113,7 +113,7 @@ const Enter: NextPage = () => {
                     name="email"
                     label="Email address"
                     type="email"
-                    placeholder={errors.email?.message}
+                    errorMessage={errors.email?.message}
                   />
                 )}
                 {method === "phone" && (
@@ -125,7 +125,7 @@ const Enter: NextPage = () => {
                     label="Phone number"
                     type="number"
                     kind="phone"
-                    placeholder={errors.phone?.message}
+                    errorMessage={errors.phone?.message}
                   />
                 )}
 

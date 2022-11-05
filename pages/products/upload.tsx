@@ -3,11 +3,45 @@ import Button from "@components/Button";
 import Input from "@components/Input";
 import Layout from "@components/Layout";
 import TextArea from "@components/TextArea";
+import { useForm } from "react-hook-form";
+import useMutation from "@libs/client/useMutaion";
+import { Product } from "@prisma/client";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
+interface UploadProductForm {
+  image?: string;
+  name: string;
+  price: number;
+  description: string;
+}
+interface UploadProductMutation {
+  ok: boolean;
+  product: Product;
+}
 const Upload: NextPage = () => {
+  const [uploadProduct, { data, loading, error }] =
+    useMutation<UploadProductMutation>("/api/products");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UploadProductForm>();
+  const router = useRouter();
+  const onValid = (data: UploadProductForm) => {
+    if (loading) return;
+    uploadProduct(data);
+  };
+  useEffect(() => {
+    console.log(data, loading, error);
+    if (data?.ok) {
+      console.log("-----------", data, data.ok, data.product);
+      // router.push(`/products/${data.product.id}`);
+    }
+  }, [data, router]);
   return (
     <Layout canGoBack title="Upload Product">
-      <form className="p-4 space-y-4">
+      <form className="p-4 space-y-4" onSubmit={handleSubmit(onValid)}>
         <div>
           <label className="w-full cursor-pointer text-gray-600 hover:border-orange-500 hover:text-orange-500 flex items-center justify-center border-2 border-dashed border-gray-300 h-48 rounded-md">
             <svg
@@ -27,10 +61,29 @@ const Upload: NextPage = () => {
             <input className="hidden" type="file" />
           </label>
         </div>
-        <Input label="Name" name="name" type="text" />
-        <Input label="Price" placeholder="0.00" name="price" type="text" kind="price" />
-        <TextArea name="description" label="Description" />
-        <Button text="Upload item" />
+        <Input
+          label="Name"
+          name="name"
+          type="text"
+          errorMessage={errors.name?.message}
+          register={register("name", { required: "이름을 입력해주세요." })}
+        />
+        <Input
+          label="Price"
+          name="price"
+          type="text"
+          kind="price"
+          placeholder="0.00"
+          errorMessage={errors.price?.message}
+          register={register("price", { required: "가격을 입력해주세요." })}
+        />
+        <TextArea
+          name="description"
+          label="Description"
+          errorMessage={errors.description?.message}
+          register={register("description", { required: "설명을 입력해주세요." })}
+        />
+        <Button text={loading ? "Loading" : "Upload item"} />
       </form>
     </Layout>
   );
