@@ -23,3 +23,15 @@ JWT와 차이점
 
 1. JWT가 아님, 모든 정보를 암호화 했기 때문에 유저의 어떠한 정보도 확인 할 수 없음.
 2. Session을 위한 백엔드 서버를 구축할 필요가 없음.
+
+## useUser Hook
+
+: 유저가 로그인했는지 판별하는 custom Hook
+
+### logic
+
+로그인 => router.replace("/")
+비로그인 => router.replace("enter")
+
+> push와 replace의 차이
+> push는 history기록이 남음

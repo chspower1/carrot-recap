@@ -46,7 +46,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   console.log(token);
   return res.json({
     ok: true,
-    user,
   });
 }
-export default withHandler("POST", handler);
+export default withHandler({ method: "POST", handler, isPrivate: false });
