@@ -36,3 +36,7 @@ withHandler는 껍데기,
 ## SWR vs Tanstack-Query
 
 https://goongoguma.github.io/2021/11/04/React-Query-vs-SWR/
+
+## 페이지 구성 시스템
+
+model 생성 => 데이터베이스 수정 => mutation => useSWR로 fetch

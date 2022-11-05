@@ -13,14 +13,15 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  phone    String?  @unique
-  email    String?  @unique
+  id       Int       @id @default(autoincrement())
+  phone    String?   @unique
+  email    String?   @unique
   name     String
   avatar   String?
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createAt DateTime  @default(now())
+  updateAt DateTime  @updatedAt
   tokens   Token[]
+  Product  Product[]
 }
 
 model Token {
@@ -30,4 +31,16 @@ model Token {
   userId   Int
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image       String
+  name        String
+  price       Int
+  description String   @db.MediumText
 }
