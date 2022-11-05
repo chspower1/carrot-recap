@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 interface UploadProductForm {
-  image?: string;
   name: string;
   price: number;
   description: string;
@@ -20,23 +19,20 @@ interface UploadProductMutation {
   product: Product;
 }
 const Upload: NextPage = () => {
-  const [uploadProduct, { data, loading, error }] =
-    useMutation<UploadProductMutation>("/api/products");
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<UploadProductForm>();
+  const [uploadProduct, { data, loading }] = useMutation("/api/products");
   const router = useRouter();
   const onValid = (data: UploadProductForm) => {
     if (loading) return;
     uploadProduct(data);
   };
   useEffect(() => {
-    console.log(data, loading, error);
     if (data?.ok) {
-      console.log("-----------", data, data.ok, data.product);
-      // router.push(`/products/${data.product.id}`);
+      router.push(`/products/${data.product.id}`);
     }
   }, [data, router]);
   return (

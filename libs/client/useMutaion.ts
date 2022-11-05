@@ -17,14 +17,16 @@ export default function useMutation<T = any>(url: string): UseMutationResult<T> 
   async function mutation(data: any) {
     try {
       setState((prev) => ({ ...prev, loading: true }));
-      const result = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      setState((prev) => ({ ...prev, data: result }));
+      const result = await (
+        await fetch(url, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+      ).json();
+      setState((prev) => ({ ...prev, data: result as any }));
     } catch (error) {
       setState((prev) => ({ ...prev, error }));
     } finally {
