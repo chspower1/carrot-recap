@@ -5,14 +5,16 @@ export interface ResponseType {
   ok: boolean;
   [key: string]: any;
 }
+
+type Method = "GET" | "POST" | "DELETE" | "PUT";
 interface Config {
-  method: "GET" | "POST" | "DELETE" | "PUT";
+  methods: Method[];
   handler: (req: NextApiRequest, res: NextApiResponse) => void;
   isPrivate?: boolean;
 }
-export default function withHandler({ method, handler, isPrivate = true }: Config) {
+export default function withHandler({ methods, handler, isPrivate = true }: Config) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== method) {
+    if (req.method && !methods.includes(req.method as any)) {
       return res.status(405).end();
     }
     if (isPrivate && !req.session.user) {
