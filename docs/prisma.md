@@ -32,3 +32,24 @@ const client = global.client || new PrismaClient();
 if (process.env.NODE_ENV === "development") global.client = client;
 export default new PrismaClient();
 ```
+
+## prisma로 검색하기
+
+https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#or
+
+```ts
+const relatedProducts = await client.product.findMany({
+  where: {
+    OR: terms?.map((term) => ({
+      name: {
+        contains: term,
+      },
+    })),
+    AND: {
+      id: {
+        not: product?.id,
+      },
+    },
+  },
+});
+```
