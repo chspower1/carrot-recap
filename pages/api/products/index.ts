@@ -23,10 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       },
     });
     console.log(product);
-    return res.status(200).json({
-      ok: true,
-      product: product,
-    });
+    return res.status(200).json({ ok: true, product });
   }
   if (req.method === "GET") {
     const products = await client.product.findMany({
