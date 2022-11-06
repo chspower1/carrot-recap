@@ -32,7 +32,6 @@ const ItemDetail: NextPage = () => {
     if (loading) return;
     if (!data) return;
     boundMutate({ ...data, isLiked: !data?.isLiked }, false);
-    mutate("/api/users/me", { ok: false }, false);
     toggleFavorite({});
   };
   return (
