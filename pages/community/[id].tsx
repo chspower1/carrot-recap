@@ -6,9 +6,12 @@ import useSWR from "swr";
 import { useForm } from "react-hook-form";
 import { Community, Reply, User } from "@prisma/client";
 import useMutation from "@libs/client/useMutaion";
+import useUser from "@libs/client/useUser";
+import community from "@api/community";
+import { useEffect } from "react";
 
 interface ReplyForm {
-  reply: string;
+  description: string;
 }
 interface DetailReply extends Reply {
   user: { name: string };
@@ -29,18 +32,26 @@ interface DetailCommunityResponse {
   community: DetailCommunity;
 }
 const CommunityPostDetail: NextPage = () => {
-  const { query } = useRouter();
-  console.log(query);
-  const { data } = useSWR<DetailCommunityResponse>(query ? `/api/community/${query.id}` : null);
+  const {
+    query: { id },
+  } = useRouter();
+  const communityId = Number(id);
+  const { user } = useUser();
+  console.log(communityId);
+  const { data, mutate } = useSWR<DetailCommunityResponse>(
+    communityId ? `/api/community/${communityId}` : null
+  );
   const { register, handleSubmit } = useForm<ReplyForm>();
   const [reply, { data: replyData, loading: replyLoading }] = useMutation(
-    `/api/community/${query.id}/reply`
+    `/api/community/${communityId}/reply`
   );
   const onValid = (replyForm: ReplyForm) => {
     if (replyLoading) return;
+    if (!communityId) return;
     reply(replyForm);
     console.log("작성완료");
   };
+  useEffect(() => {}, [data]);
   console.log(data);
   return (
     <Layout canGoBack>
@@ -111,7 +122,7 @@ const CommunityPostDetail: NextPage = () => {
         ))}
         <form onSubmit={handleSubmit(onValid)} className="px-4">
           <TextArea
-            register={register("reply", { required: "질문을 입력해주세요." })}
+            register={register("description", { required: "질문을 입력해주세요." })}
             name="description"
             placeholder="Answer this question!"
             required
