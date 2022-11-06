@@ -18,16 +18,13 @@ interface ProductsResponse {
 const Home: NextPage = () => {
   const { user, isLoading } = useUser();
   const { data } = useSWR<ProductsResponse>("/api/products");
-  console.log(data);
-  console.log(user, isLoading);
-  if (!data) return null;
   return (
     <Layout title="홈" hasTabBar>
       <Head>
         <title>Home</title>
       </Head>
       <div className="flex flex-col space-y-5 divide-y">
-        {data.products?.map((product) => (
+        {data?.products?.map((product) => (
           <Item
             id={product.id}
             key={product.id}

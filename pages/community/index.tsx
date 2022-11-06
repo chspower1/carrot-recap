@@ -2,8 +2,10 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import FloatingButton from "@components/FloatingButton";
 import Layout from "@components/Layout";
+import useSWR from "swr";
 
 const Community: NextPage = () => {
+  const { data } = useSWR("/api/community");
   return (
     <Layout hasTabBar title="동네생활">
       <div className="space-y-4 divide-y-[2px]">
