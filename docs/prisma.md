@@ -53,3 +53,8 @@ const relatedProducts = await client.product.findMany({
   },
 });
 ```
+
+## delete의 성질
+
+`clinet.favorite.delete()`로 삭제하려 한다면 unique인 성질을 가지고 있는 조건으로만 삭제할 수 있음
+deleteMany는 unique가 아니더라도 가능함.

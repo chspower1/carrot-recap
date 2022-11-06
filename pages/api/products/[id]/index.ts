@@ -5,7 +5,6 @@ import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const { id } = req.query;
-  console.log("----", id);
   if (id) {
     const product = await client.product.findUnique({
       where: {
@@ -36,7 +35,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
       },
     });
-    console.log(relatedProducts);
     return res.json({ ok: true, product, relatedProducts });
   }
 }
