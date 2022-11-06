@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function useUser() {
-  const { data, error } = useSWR("api/users/me");
+  const { data, error } = useSWR("/api/users/me");
   const router = useRouter();
   useEffect(() => {
     if (data && !data.ok) {
