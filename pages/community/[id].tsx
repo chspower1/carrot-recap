@@ -41,7 +41,7 @@ const CommunityPostDetail: NextPage = () => {
   const { data, mutate } = useSWR<DetailCommunityResponse>(
     communityId ? `/api/community/${communityId}` : null
   );
-  const { register, handleSubmit } = useForm<ReplyForm>();
+  const { register, handleSubmit, reset } = useForm<ReplyForm>();
   const [reply, { data: replyData, loading: replyLoading }] = useMutation(
     `/api/community/${communityId}/reply`
   );
@@ -49,6 +49,7 @@ const CommunityPostDetail: NextPage = () => {
     if (replyLoading) return;
     if (!communityId) return;
     reply(replyForm);
+    reset();
     const newReplies = data?.community.replies;
     newReplies?.push({
       userId: user.id,
@@ -62,8 +63,18 @@ const CommunityPostDetail: NextPage = () => {
       updateAt: new Date(),
     });
     mutate(
-      (prev) => ({ ...prev!, community: { ...prev?.community!, replies: newReplies! } }),
-      true
+      (prev) => ({
+        ...prev!,
+        community: {
+          ...prev?.community!,
+          replies: newReplies!,
+          _count: {
+            ...prev?.community._count!,
+            replies: prev?.community?._count?.replies! + 1,
+          },
+        },
+      }),
+      false
     );
   };
   return (
@@ -84,7 +95,7 @@ const CommunityPostDetail: NextPage = () => {
             <span className="text-orange-500 font-medium">Q.</span>
             {data?.community?.question}
           </div>
-          <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-2.5 border-t border-b-[2px]  w-full">
+          <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-2.5 border-t border-b-[2px] w-full">
             <span className="flex space-x-2 items-center text-sm">
               <svg
                 className="w-4 h-4"
