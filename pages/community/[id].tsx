@@ -8,75 +8,93 @@ import { Community, Reply, User } from "@prisma/client";
 import useMutation from "@libs/client/useMutaion";
 import useUser from "@libs/client/useUser";
 import community from "@api/community";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ReplyForm {
   description: string;
 }
-interface DetailReply extends Reply {
-  user: { name: string };
+interface DetailReply {
+  user: { name: string; avator: string };
+  description: string;
 }
 interface DetailCommunity extends Community {
   user: {
     name: string;
     avatar: string;
   };
-  replies: DetailReply[];
   _count: {
-    replies: number;
     curious: number;
   };
 }
 interface DetailCommunityResponse {
   ok: true;
   community: DetailCommunity;
+  replies: DetailReply[];
+
+  isCurious: boolean;
 }
 const CommunityPostDetail: NextPage = () => {
+  // community id 추출
   const {
     query: { id },
   } = useRouter();
   const communityId = Number(id);
+
+  // user
   const { user } = useUser();
-  console.log(communityId);
+
+  // react-hook-form
+  const { register, handleSubmit, reset } = useForm<ReplyForm>();
+
+  // community fetch
   const { data, mutate } = useSWR<DetailCommunityResponse>(
     communityId ? `/api/community/${communityId}` : null
   );
-  const { register, handleSubmit, reset } = useForm<ReplyForm>();
+  const [curiousCount, setcuriousCount] = useState(data?.isCurious ? 1 : 0);
+
+  // reply && curious mutation
   const [reply, { data: replyData, loading: replyLoading }] = useMutation(
     `/api/community/${communityId}/reply`
   );
+  const [curious, { data: curiousData, loading: curiousLoading }] = useMutation(
+    `/api/community/${communityId}/curious`
+  );
+
+  // form on valid function
   const onValid = (replyForm: ReplyForm) => {
-    if (replyLoading) return;
-    if (!communityId) return;
-    reply(replyForm);
+    if (replyLoading || !communityId) return;
     reset();
-    const newReplies = data?.community.replies;
-    newReplies?.push({
-      userId: user.id,
+    reply(replyForm);
+    const newReply = {
       user: {
         name: user?.name!,
+        avator: user?.avatar!,
       },
-      communityId,
       description: replyForm?.description!,
-      id: 1,
-      createAt: new Date(),
-      updateAt: new Date(),
-    });
+    };
+    // reply mutate
+    mutate({ ...data!, replies: [...data?.replies!, newReply] }, false);
+  };
+
+  const toggleCurios = () => {
+    if (curiousLoading) return;
+    // curious create or delete
+    curious({});
+    // curious mutate
+    console.log(data?.isCurious);
     mutate(
-      (prev) => ({
-        ...prev!,
+      {
+        ...data!,
+        isCurious: !data?.isCurious!,
         community: {
-          ...prev?.community!,
-          replies: newReplies!,
-          _count: {
-            ...prev?.community._count!,
-            replies: prev?.community?._count?.replies! + 1,
-          },
+          ...data?.community!,
+          _count: { curious: data?.community?._count.curious! + (data?.isCurious! ? -1 : 1) },
         },
-      }),
+      },
       false
     );
   };
+
   return (
     <Layout canGoBack>
       <div>
@@ -96,7 +114,10 @@ const CommunityPostDetail: NextPage = () => {
             {data?.community?.question}
           </div>
           <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-2.5 border-t border-b-[2px] w-full">
-            <span className="flex space-x-2 items-center text-sm">
+            <span
+              onClick={toggleCurios}
+              className="flex space-x-2 items-center text-sm hover:cursor-pointer hover:text-orange-500"
+            >
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -111,7 +132,7 @@ const CommunityPostDetail: NextPage = () => {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <span>궁금해요 {data?.community?._count.curious}</span>
+              <span>궁금해요 {data?.community?._count?.curious}</span>
             </span>
             <span className="flex space-x-2 items-center text-sm">
               <svg
@@ -128,12 +149,12 @@ const CommunityPostDetail: NextPage = () => {
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 ></path>
               </svg>
-              <span>답변 {data?.community?._count.replies}</span>
+              <span>답변 {data?.replies.length}</span>
             </span>
           </div>
         </div>
-        {data?.community?.replies?.map((reply) => (
-          <div key={reply.id} className="px-4 my-5 space-y-5">
+        {data?.replies?.map((reply, index) => (
+          <div key={`reply${index}`} className="px-4 my-5 space-y-5">
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-slate-200 rounded-full" />
               <div>

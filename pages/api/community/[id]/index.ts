@@ -3,12 +3,16 @@ import { withApiSession } from "@libs/server/withSession";
 import { NextApiRequest, NextApiResponse } from "next";
 import client from "@libs/server/client";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
+  const {
+    query: { id },
+    session: { user },
+  } = req;
+  const communityId = Number(id);
   console.log(id);
-  if (id) {
+  if (communityId) {
     const community = await client.community.findUnique({
       where: {
-        id: Number(id),
+        id: communityId,
       },
       include: {
         user: {
@@ -17,25 +21,37 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             avatar: true,
           },
         },
-        replies: {
-          include: {
-            user: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
         _count: {
           select: {
-            replies: true,
             curious: true,
           },
         },
       },
     });
-    console.log(community);
-    return res.json({ ok: true, community });
+    const replies = await client.reply.findMany({
+      where: {
+        communityId,
+      },
+      select: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
+        description: true,
+      },
+    });
+    const isCurious = Boolean(
+      await client.curious.findFirst({
+        where: {
+          userId: user?.id,
+        },
+      })
+    );
+
+    console.log(community, replies, isCurious);
+    return res.json({ ok: true, community, replies, isCurious });
   }
 }
 export default withApiSession(withHandler({ methods: ["GET"], handler }));
