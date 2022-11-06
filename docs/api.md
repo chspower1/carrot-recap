@@ -44,3 +44,6 @@ model 생성 => 데이터베이스 수정 => mutation => useSWR로 fetch
 ## Optimistic UI Update
 
 백엔드에 요청을 보낼 때 백엔드의 응답을 기다리지 않고 변경사항을 반영하는 것
+
+    SWR의 mutate를 이용
+    - unbound와 bound의 차이점 찾아보기

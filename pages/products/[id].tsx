@@ -21,11 +21,20 @@ interface ItemDetailResponse {
 const ItemDetail: NextPage = () => {
   const router = useRouter();
   console.log(router.query);
-  const { data } = useSWR<ItemDetailResponse>(
+  const { data, mutate } = useSWR<ItemDetailResponse>(
     router.query ? `/api/products/${router.query.id}` : null
   );
-  const [toggleFavorite] = useMutation(`/api/products/${router.query.id}/favorite`);
+  const [toggleFavorite, { loading }] = useMutation(`/api/products/${router.query.id}/favorite`);
   const handleClickFavorite = () => {
+    if (loading) return;
+    if (!data) return;
+    mutate(
+      {
+        ...data,
+        isLiked: data?.isLiked ? false : true,
+      },
+      false
+    );
     toggleFavorite({});
   };
   return (
@@ -87,7 +96,7 @@ const ItemDetail: NextPage = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Similar items</h2>
-          <div className=" mt-6 grid grid-cols-2 gap-4">
+          {/* <div className=" mt-6 grid grid-cols-2 gap-4">
             {data?.relatedProducts.map((product) => (
               <Link href={`/products/${product.id}`} key={product.id}>
                 <div>
@@ -97,7 +106,7 @@ const ItemDetail: NextPage = () => {
                 </div>
               </Link>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </Layout>
