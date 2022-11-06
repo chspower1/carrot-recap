@@ -16,7 +16,7 @@ interface EnterForm {
 interface TokenForm {
   token: string;
 }
-interface EnterMutationResult {
+interface MutationResult {
   ok: boolean;
 }
 const Enter: NextPage = () => {
@@ -32,9 +32,9 @@ const Enter: NextPage = () => {
     handleSubmit: tokenHandleSubmit,
     formState: { errors: tokenErrors },
   } = useForm<TokenForm>();
-  const [enter, { loading, data, error }] = useMutation<EnterMutationResult>("/api/users/enter");
+  const [enter, { loading, data, error }] = useMutation<MutationResult>("/api/users/enter");
   const [confirmToken, { loading: tokenLoading, data: tokenData, error: tokenError }] =
-    useMutation<EnterMutationResult>("/api/users/confirm");
+    useMutation<MutationResult>("/api/users/confirm");
   const [method, setMethod] = useState<"email" | "phone">("email");
   const router = useRouter();
   const handleClickMethod = () => {
@@ -42,14 +42,17 @@ const Enter: NextPage = () => {
     setMethod(method === "email" ? "phone" : "email");
   };
   const onValid = (enterForm: EnterForm) => {
-    reset();
+    if (loading) return;
     enter(enterForm);
+    reset();
   };
   const onTokenValid = (tokenForm: TokenForm) => {
+    if (tokenLoading) return;
     confirmToken(tokenForm);
     reset();
   };
   useEffect(() => {
+    console.log(tokenData);
     if (tokenData?.ok) {
       router.push("/");
     }
@@ -113,7 +116,7 @@ const Enter: NextPage = () => {
                     name="email"
                     label="Email address"
                     type="email"
-                    placeholder={errors.email?.message}
+                    errorMessage={errors.email?.message}
                   />
                 )}
                 {method === "phone" && (
@@ -125,7 +128,7 @@ const Enter: NextPage = () => {
                     label="Phone number"
                     type="number"
                     kind="phone"
-                    placeholder={errors.phone?.message}
+                    errorMessage={errors.phone?.message}
                   />
                 )}
 
