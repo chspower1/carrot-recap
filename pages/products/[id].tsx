@@ -8,6 +8,7 @@ import Link from "next/link";
 import useMutation from "@libs/client/useMutaion";
 import { cls } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
+import { useEffect } from "react";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -18,22 +19,34 @@ interface ItemDetailResponse {
   product: ProductWithUser;
   relatedProducts: Product[];
   isLiked: boolean;
+  message?: string;
 }
 const ItemDetail: NextPage = () => {
+  // useRouter
   const router = useRouter();
-  console.log(router.query);
-  const { user, isLoading } = useUser();
-  const { mutate } = useSWRConfig();
+
+  // Fetch Products
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query ? `/api/products/${router.query.id}` : null
   );
+
+  // Mutation Favorite
   const [toggleFavorite, { loading }] = useMutation(`/api/products/${router.query.id}/favorite`);
+
+  // Handle Function on click Curious
   const handleClickFavorite = () => {
-    if (loading) return;
-    if (!data) return;
+    if (loading || !data) return;
     boundMutate({ ...data, isLiked: !data?.isLiked }, false);
     toggleFavorite({});
   };
+
+  // 존재하지 않는 상품일 경우 404 (수정요망)
+  useEffect(() => {
+    if (data?.message) {
+      router.replace("/404");
+    }
+  }, [data, router]);
+  // if (!data?.ok) return <div>{data?.message}</div>;
   return (
     <Layout canGoBack>
       <div className="px-4  py-4">

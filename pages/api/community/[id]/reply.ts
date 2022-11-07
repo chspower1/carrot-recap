@@ -4,13 +4,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import client from "@libs/server/client";
 import community from "..";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Request info
   const {
     query: { id },
     body: { description },
     session: { user },
   } = req;
   const communityId = Number(id);
-  console.log(communityId, description, user);
+
+  // 해당 커뮤니티가 존재 하는지
   const community = await client.community.findUnique({
     where: {
       id: communityId,
@@ -19,7 +21,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       id: true,
     },
   });
+  // 만약 존재하지 않는다면 404 리턴
   if (!community) return res.status(404);
+
+  // 댓글 업로드
   const reply = await client.reply.create({
     data: {
       description,
@@ -35,7 +40,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     },
   });
-  console.log(reply);
+
+  // 정상 리턴
   return res.json({ ok: true, reply });
 }
 

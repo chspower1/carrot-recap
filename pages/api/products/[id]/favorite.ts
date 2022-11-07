@@ -4,18 +4,21 @@ import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+  //Request Info
   const {
     query: { id },
     session: { user },
   } = req;
+
+  // 좋아요 버튼 클릭 여부
   const isExists = await client.favorite.findFirst({
     where: {
       userId: user?.id,
       productId: Number(id),
     },
   });
-  console.log(isExists);
 
+  // 좋아요 버튼을 이미 클릭한 상태라면
   if (isExists) {
     //delete
     await client.favorite.delete({
@@ -23,7 +26,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         id: isExists.id,
       },
     });
-  } else {
+  }
+  // 좋아요 버튼을 클릭하지 않은 상태라면
+  else {
     //create
     await client.favorite.create({
       data: {
@@ -40,6 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       },
     });
   }
+  // 정상 리턴
   return res.json({ ok: true });
 }
 export default withApiSession(

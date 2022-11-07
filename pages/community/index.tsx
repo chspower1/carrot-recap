@@ -22,11 +22,14 @@ interface CommunityResponse {
 }
 
 const CommunityPage: NextPage = () => {
+  // 현재 위치정보 불러오기
   const { latitude, longitude } = useCoords();
+
+  // 위치기반 Communities 불러오기
   const { data } = useSWR<CommunityResponse>(
     latitude && longitude ? `/api/community?latitude=${latitude}&longitude=${longitude}` : null
   );
-  console.log(data);
+
   return (
     <Layout hasTabBar title="동네생활">
       <div className="space-y-4 divide-y-[2px]">

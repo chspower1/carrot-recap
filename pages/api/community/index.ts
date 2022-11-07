@@ -4,11 +4,15 @@ import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+  // POST Request
   if (req.method === "POST") {
+    // Request Info
     const {
       session: { user },
       body: { question, latitude, longitude },
     } = req;
+
+    // 커뮤니티 생성
     const community = await client.community.create({
       data: {
         question,
@@ -21,14 +25,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
       },
     });
+
+    // 정상 리턴
     return res.json({ ok: true, community });
   }
+  // GET Request
   if (req.method === "GET") {
+    // Request Info
     const {
       query: { latitude: latitudeStr, longitude: longitudeStr },
     } = req;
     const [latitude, longitude] = [Number(latitudeStr), Number(longitudeStr)];
-    console.log(latitude, longitude);
+
+    // 가까운 커뮤니티글
     const communities = await client.community.findMany({
       where: {
         latitude: {
@@ -54,6 +63,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
       },
     });
+
+    // 정상 리턴
     return res.json({ ok: true, communities });
   }
 }

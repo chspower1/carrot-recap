@@ -9,6 +9,7 @@ import { Product } from "@prisma/client";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
+// Type
 interface UploadProductForm {
   name: string;
   price: number;
@@ -18,18 +19,28 @@ interface UploadProductMutation {
   ok: boolean;
   product: Product;
 }
+
 const Upload: NextPage = () => {
+  // Router
+  const router = useRouter();
+
+  // React-Hook-Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<UploadProductForm>();
+
+  // Mutation Product
   const [uploadProduct, { data, loading }] = useMutation<UploadProductMutation>("/api/products");
-  const router = useRouter();
+
+  // On valid function of Form
   const onValid = (data: UploadProductForm) => {
     if (loading) return;
     uploadProduct(data);
   };
+
+  //useEffect
   useEffect(() => {
     if (data?.ok) {
       router.push(`/products/${data.product.id}`);

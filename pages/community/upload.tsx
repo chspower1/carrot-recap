@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import useCoords from "@libs/client/useCoords";
 
+// Type
 interface writeForm {
   question: string;
 }
@@ -17,22 +18,32 @@ interface WriteCommunityResponse {
   community: Community;
 }
 
+// Main Function
 const Upload: NextPage = () => {
+  // 현재 위치정보 불러오기
   const { latitude, longitude } = useCoords();
+
+  // React-Hook-Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<writeForm>();
+
+  // Mutation community
   const [community, { data, loading, error }] =
     useMutation<WriteCommunityResponse>("/api/community");
 
+  // useRouter
   const router = useRouter();
 
+  // Form valid function
   const onValid = (writeForm: writeForm) => {
     if (loading) return;
     community({ ...writeForm, latitude, longitude });
   };
+
+  // useEffect
   useEffect(() => {
     if (data?.ok) {
       router.push(`/community/${data.community.id}`);
