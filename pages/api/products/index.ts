@@ -36,7 +36,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       include: {
         _count: {
           select: {
-            favorites: true,
+            records: {
+              where: {
+                kind: "Favorite",
+              },
+            },
           },
         },
       },

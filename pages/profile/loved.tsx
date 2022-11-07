@@ -1,13 +1,23 @@
 import type { NextPage } from "next";
 import Item from "@components/Item";
 import Layout from "@components/Layout";
+import useSWR from "swr";
+import { RecordResponsse } from "./bought";
 
 const Loved: NextPage = () => {
+  const { data } = useSWR<RecordResponsse>("/api/users/me/record?kind=Favorite");
   return (
-    <Layout title="관심목록" canGoBack>
+    <Layout title="좋아요 목록" canGoBack>
       <div className="flex flex-col space-y-5 pb-10  divide-y">
-        {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
-          <Item key={i} id={i} title="iPhone 14" price={99} comments={1} hearts={1} />
+        {data?.records?.map(({ product }) => (
+          <Item
+            key={product.id}
+            id={product.id}
+            title={product.name}
+            price={product.price}
+            comments={1}
+            hearts={product._count.records}
+          />
         ))}
       </div>
     </Layout>

@@ -58,3 +58,116 @@ const relatedProducts = await client.product.findMany({
 
 `clinet.favorite.delete()`로 삭제하려 한다면 unique인 성질을 가지고 있는 조건으로만 삭제할 수 있음
 deleteMany는 unique가 아니더라도 가능함.
+
+## 한 model 에서 다른 model 두번 참조
+
+: name을 활용하여 relation 해줘야 함
+
+```prisma
+model User{
+  id             Int         @id @default(autoincrement())
+  createAt       DateTime    @default(now())
+  updateAt       DateTime    @updatedAt
+  writtenReviews Review[]    @relation(name: "writtenReviews")
+  receiveReviews Review[]    @relation(name: "receiveReviews")
+}
+model Review {
+  id          Int      @id @default(autoincrement())
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
+  createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id])
+  createById  Int
+  createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id])
+  createForId Int
+}
+```
+
+## enums
+
+enum을 활용한 경우, 아래 예시를 참고해보자(리팩토링할때 꼭 enum으로 바꿔보자)
+
+```prisma
+model Product {
+  id          Int        @id @default(autoincrement())
+  createAt    DateTime   @default(now())
+  updateAt    DateTime   @updatedAt
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image       String
+  name        String
+  price       Int
+  description String     @db.MediumText
+  favorites   Favorite[]
+  sales       Sale[]
+  purchases   Purchase[]
+}
+
+model Sale {
+  id        Int      @id @default(autoincrement())
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  productId Int
+}
+
+model Purchase {
+  id        Int      @id @default(autoincrement())
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  productId Int
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  productId Int
+}
+```
+
+위 세 모델은 구조가 같다 이럴 경우 enum을 활용할 수 있다.
+
+```prisma
+model Product {
+  id          Int        @id @default(autoincrement())
+  createAt    DateTime   @default(now())
+  updateAt    DateTime   @updatedAt
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image       String
+  name        String
+  price       Int
+  description String     @db.MediumText
+  records     Record[]
+}
+model Record{
+    id        Int      @id @default(autoincrement())
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  productId Int
+  kind      Kind
+}
+enum Kind{
+  Purchase
+  Sale
+  Favorite
+}
+```
+
+## model table을 수정했을때 발생되는 오류
+
+1. 기존에 DB에 있던 Data가 추가되는 column을 갖지 않았을 경우.
+   - 해결 방법
+     1. model에 default값을 넣어준다.
+     2. required를 해제시킨다.

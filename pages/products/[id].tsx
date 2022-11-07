@@ -31,7 +31,9 @@ const ItemDetail: NextPage = () => {
   );
 
   // Mutation Favorite
-  const [toggleFavorite, { loading }] = useMutation(`/api/products/${router.query.id}/favorite`);
+  const [toggleFavorite, { loading }] = useMutation(
+    `/api/products/${router.query.id}/record?kind=Favorite`
+  );
 
   // Handle Function on click Curious
   const handleClickFavorite = () => {
@@ -41,11 +43,11 @@ const ItemDetail: NextPage = () => {
   };
 
   // 존재하지 않는 상품일 경우 404 (수정요망)
-  useEffect(() => {
-    if (data?.message) {
-      router.replace("/404");
-    }
-  }, [data, router]);
+  // useEffect(() => {
+  //   if (data?.message) {
+  //     router.replace("/404");
+  //   }
+  // }, [data, router]);
   // if (!data?.ok) return <div>{data?.message}</div>;
   return (
     <Layout canGoBack>
