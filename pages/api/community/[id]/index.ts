@@ -28,6 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       },
     });
+    if (!community) return res.status(404);
     const replies = await client.reply.findMany({
       where: {
         communityId,

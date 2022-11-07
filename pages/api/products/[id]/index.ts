@@ -8,10 +8,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     query: { id },
     session: { user },
   } = req;
+  const productId = Number(id);
   if (id) {
     const product = await client.product.findUnique({
       where: {
-        id: Number(id),
+        id: productId,
       },
       include: {
         user: {
@@ -23,6 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
       },
     });
+    if (!product) return res.status(404);
     const terms = await product?.name.split(" ");
     const relatedProducts = await client.product.findMany({
       where: {
@@ -41,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     const isLiked = Boolean(
       await client.favorite.findFirst({
         where: {
-          productId: Number(id),
+          productId,
           userId: user?.id,
         },
         select: {
