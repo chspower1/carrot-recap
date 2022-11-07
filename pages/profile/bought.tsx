@@ -29,7 +29,6 @@ const Bought: NextPage = () => {
             id={product.id}
             title={product.name}
             price={product.price}
-            comments={1}
             hearts={product._count.records}
           />
         ))}
