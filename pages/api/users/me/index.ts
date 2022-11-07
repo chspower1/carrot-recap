@@ -4,6 +4,7 @@ import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+  // Requser Info
   const id = req.session.user;
   console.log(req.session.user);
   return res.json({
