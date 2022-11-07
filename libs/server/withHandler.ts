@@ -17,7 +17,8 @@ export default function withHandler({ methods, handler, isPrivate = true }: Conf
     if (req.method && !methods.includes(req.method as Method)) {
       return res.status(405).end();
     }
-    if (isPrivate && !req.session.user) {
+    if (isPrivate && !req.session?.user) {
+      console.log(req.session?.user);
       return res.status(401).json({ ok: false, message: "로그인이 필요합니다!" });
     }
     try {

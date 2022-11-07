@@ -4,25 +4,36 @@ import Layout from "@components/Layout";
 import useMutation from "@libs/client/useMutaion";
 import { useEffect } from "react";
 import Router, { useRouter } from "next/router";
+import useSWR from "swr";
+import { User } from "@prisma/client";
+
+export interface ProfileResponse {
+  ok: boolean;
+  profile: User;
+}
 
 const Profile: NextPage = () => {
-  const [logout, { data, loading }] = useMutation("api/logout");
   const router = useRouter();
+  const [logout, { data: logoutData, loading }] = useMutation("api/logout");
+  const { data, mutate } = useSWR<ProfileResponse>("/api/users/me");
+
+  // 로그아웃 클릭시 발동 함수
   const handleClickLogout = () => {
     logout({});
+    mutate();
   };
   useEffect(() => {
-    if (data?.ok) {
+    if (logoutData?.ok) {
       router.push("/enter");
     }
-  }, [data, router]);
+  }, [logoutData, router]);
   return (
     <Layout hasTabBar title="나의 캐럿">
       <div className="px-4">
         <div className="flex items-center mt-4 space-x-3 relative">
           <div className="w-16 h-16 bg-slate-500 rounded-full" />
           <div className="flex flex-col">
-            <span className="font-medium text-gray-900">Steve Jebs</span>
+            <span className="font-medium text-gray-900">{data?.profile.name}</span>
             <Link href="/profile/edit">
               <div className="text-sm text-gray-700">Edit profile &rarr;</div>
             </Link>
