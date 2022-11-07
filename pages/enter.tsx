@@ -8,6 +8,8 @@ import { cls } from "@libs/client/utils";
 import Layout from "@components/Layout";
 import getEnter from "@api/users/enter";
 import { useRouter } from "next/router";
+import useUser from "@libs/client/useUser";
+import { User } from "@prisma/client";
 
 interface EnterForm {
   email?: string;
@@ -24,7 +26,6 @@ const Enter: NextPage = () => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<EnterForm>();
   const {
@@ -44,15 +45,13 @@ const Enter: NextPage = () => {
   const onValid = (enterForm: EnterForm) => {
     if (loading) return;
     enter(enterForm);
-    reset();
   };
   const onTokenValid = (tokenForm: TokenForm) => {
     if (tokenLoading) return;
     confirmToken(tokenForm);
-    reset();
   };
   useEffect(() => {
-    console.log(tokenData);
+    console.log(tokenData, tokenError, tokenLoading);
     if (tokenData?.ok) {
       router.push("/");
     }

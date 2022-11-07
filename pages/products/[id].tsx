@@ -8,6 +8,7 @@ import Link from "next/link";
 import useMutation from "@libs/client/useMutaion";
 import { cls } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
+import { useEffect } from "react";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -18,22 +19,34 @@ interface ItemDetailResponse {
   product: ProductWithUser;
   relatedProducts: Product[];
   isLiked: boolean;
+  message?: string;
 }
 const ItemDetail: NextPage = () => {
+  // useRouter
   const router = useRouter();
-  console.log(router.query);
-  const { user, isLoading } = useUser();
-  const { mutate } = useSWRConfig();
+
+  // Fetch Products
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query ? `/api/products/${router.query.id}` : null
   );
+
+  // Mutation Favorite
   const [toggleFavorite, { loading }] = useMutation(`/api/products/${router.query.id}/favorite`);
+
+  // Handle Function on click Curious
   const handleClickFavorite = () => {
-    if (loading) return;
-    if (!data) return;
+    if (loading || !data) return;
     boundMutate({ ...data, isLiked: !data?.isLiked }, false);
     toggleFavorite({});
   };
+
+  // 존재하지 않는 상품일 경우 404 (수정요망)
+  useEffect(() => {
+    if (data?.message) {
+      router.replace("/404");
+    }
+  }, [data, router]);
+  // if (!data?.ok) return <div>{data?.message}</div>;
   return (
     <Layout canGoBack>
       <div className="px-4  py-4">
@@ -42,14 +55,14 @@ const ItemDetail: NextPage = () => {
           <div className="flex cursor-pointer py-3 border-t border-b items-center space-x-3">
             <div className="w-12 h-12 rounded-full bg-slate-300" />
             <div>
-              <p className="text-sm font-medium text-gray-700">{data?.product.user?.name}</p>
+              <p className="text-sm font-medium text-gray-700">{data?.product?.user?.name}</p>
               <p className="text-xs font-medium text-gray-500">View profile &rarr;</p>
             </div>
           </div>
           <div className="mt-5">
-            <h1 className="text-3xl font-bold text-gray-900">{data?.product.name}</h1>
-            <span className="text-2xl block mt-3 text-gray-900">{data?.product.price}$</span>
-            <p className=" my-6 text-gray-700">{data?.product.description}</p>
+            <h1 className="text-3xl font-bold text-gray-900">{data?.product?.name}</h1>
+            <span className="text-2xl block mt-3 text-gray-900">{data?.product?.price}$</span>
+            <p className=" my-6 text-gray-700">{data?.product?.description}</p>
             <div className="flex items-center justify-between space-x-2">
               <Button large text="Talk to seller" />
               <button
@@ -93,8 +106,8 @@ const ItemDetail: NextPage = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Similar items</h2>
-          {/* <div className=" mt-6 grid grid-cols-2 gap-4">
-            {data?.relatedProducts.map((product) => (
+          <div className=" mt-6 grid grid-cols-2 gap-4">
+            {data?.relatedProducts?.map((product) => (
               <Link href={`/products/${product.id}`} key={product.id}>
                 <div>
                   <div className="h-56 w-full mb-4 bg-slate-300" />
@@ -103,7 +116,7 @@ const ItemDetail: NextPage = () => {
                 </div>
               </Link>
             ))}
-          </div> */}
+          </div>
         </div>
       </div>
     </Layout>

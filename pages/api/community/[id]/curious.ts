@@ -4,48 +4,63 @@ import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  //Request Info
+  // Request info
   const {
     query: { id },
     session: { user },
   } = req;
+  const communityId = Number(id);
 
-  // 좋아요 버튼 클릭 여부
-  const isExists = await client.favorite.findFirst({
+  // 해당 커뮤니티가 존재 하는지
+  const community = await client.community.findUnique({
+    where: {
+      id: communityId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  // 만약 존재하지 않는다면 404 리턴
+  if (!community) return res.status(404);
+
+  // 궁금해요 클릭 여부
+  const isExists = await client.curious.findFirst({
     where: {
       userId: user?.id,
-      productId: Number(id),
+      communityId,
+    },
+    select: {
+      id: true,
     },
   });
 
-  // 좋아요 버튼을 이미 클릭한 상태라면
+  // 이미 클릭했으면
   if (isExists) {
     //delete
-    await client.favorite.delete({
+    await client.curious.delete({
       where: {
         id: isExists.id,
       },
     });
   }
-  // 좋아요 버튼을 클릭하지 않은 상태라면
+  // 클릭을 안했으면
   else {
     //create
-    await client.favorite.create({
+    await client.curious.create({
       data: {
         user: {
           connect: {
             id: user?.id,
           },
         },
-        product: {
+        community: {
           connect: {
-            id: Number(id),
+            id: communityId,
           },
         },
       },
     });
   }
-  // 정상 리턴
   return res.json({ ok: true });
 }
 export default withApiSession(

@@ -26,11 +26,9 @@ export default function useMutation<T = any>(url: string): UseMutationResult<T> 
           },
         })
       ).json();
-      setState((prev) => ({ ...prev, data: result as any }));
+      setState((prev) => ({ ...prev, data: result as any, loading: false }));
     } catch (error) {
-      setState((prev) => ({ ...prev, error }));
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, error, loading: false }));
     }
   }
   return [mutation, state];

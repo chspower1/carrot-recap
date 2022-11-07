@@ -20,6 +20,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       userId: foundToken.userId,
     },
   });
-  return res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true });
 }
 export default withApiSession(withHandler({ methods: ["POST"], handler, isPrivate: false }));

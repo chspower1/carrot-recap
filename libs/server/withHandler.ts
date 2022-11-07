@@ -14,7 +14,7 @@ interface Config {
 }
 export default function withHandler({ methods, handler, isPrivate = true }: Config) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
-    if (req.method && !methods.includes(req.method as any)) {
+    if (req.method && !methods.includes(req.method as Method)) {
       return res.status(405).end();
     }
     if (isPrivate && !req.session.user) {
