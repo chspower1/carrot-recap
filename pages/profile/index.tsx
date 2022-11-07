@@ -1,18 +1,37 @@
 import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "@components/Layout";
+import useMutation from "@libs/client/useMutaion";
+import { useEffect } from "react";
+import Router, { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
+  const [logout, { data, loading }] = useMutation("api/logout");
+  const router = useRouter();
+  const handleClickLogout = () => {
+    logout({});
+  };
+  useEffect(() => {
+    if (data?.ok) {
+      router.push("/enter");
+    }
+  }, [data, router]);
   return (
     <Layout hasTabBar title="나의 캐럿">
       <div className="px-4">
-        <div className="flex items-center mt-4 space-x-3">
+        <div className="flex items-center mt-4 space-x-3 relative">
           <div className="w-16 h-16 bg-slate-500 rounded-full" />
           <div className="flex flex-col">
             <span className="font-medium text-gray-900">Steve Jebs</span>
             <Link href="/profile/edit">
               <div className="text-sm text-gray-700">Edit profile &rarr;</div>
             </Link>
+          </div>
+          <div
+            onClick={handleClickLogout}
+            className="cursor-pointer absolute right-0 p-2 bg-red-500 hover:bg-red-700 text-white text-sm rounded-sm top-2 font-bold"
+          >
+            로그아웃
           </div>
         </div>
         <div className="mt-10 flex justify-around">
