@@ -7,11 +7,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "POST") {
     const {
       session: { user },
-      body: { question },
+      body: { question, latitude, longitude },
     } = req;
     const community = await client.community.create({
       data: {
         question,
+        latitude,
+        longitude,
         user: {
           connect: {
             id: user?.id,

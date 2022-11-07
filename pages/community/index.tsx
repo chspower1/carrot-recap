@@ -78,7 +78,7 @@ const CommunityPage: NextPage = () => {
             </div>
           </Link>
         ))}
-        <FloatingButton href="/community/write">
+        <FloatingButton href="/community/upload">
           <svg
             className="w-6 h-6"
             fill="none"

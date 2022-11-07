@@ -7,6 +7,7 @@ import useMutation from "@libs/client/useMutaion";
 import { Community } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import useCoords from "@libs/client/useCoords";
 
 interface writeForm {
   question: string;
@@ -16,7 +17,8 @@ interface WriteCommunityResponse {
   community: Community;
 }
 
-const Write: NextPage = () => {
+const Upload: NextPage = () => {
+  const { latitude, longitude } = useCoords();
   const {
     register,
     handleSubmit,
@@ -29,7 +31,7 @@ const Write: NextPage = () => {
 
   const onValid = (writeForm: writeForm) => {
     if (loading) return;
-    community(writeForm);
+    community({ ...writeForm, latitude, longitude });
   };
   useEffect(() => {
     if (data?.ok) {
@@ -51,4 +53,4 @@ const Write: NextPage = () => {
   );
 };
 
-export default Write;
+export default Upload;
