@@ -31,7 +31,9 @@ const ItemDetail: NextPage = () => {
   );
 
   // Mutation Favorite
-  const [toggleFavorite, { loading }] = useMutation(`/api/products/${router.query.id}/favorite`);
+  const [toggleFavorite, { loading }] = useMutation(
+    `/api/products/${router.query.id}/record?kind=Favorite`
+  );
 
   // Handle Function on click Curious
   const handleClickFavorite = () => {

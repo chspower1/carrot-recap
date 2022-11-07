@@ -50,10 +50,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
 
   // 좋아요 클릭 여부
   const isLiked = Boolean(
-    await client.favorite.findFirst({
+    await client.record.findFirst({
       where: {
         productId,
         userId: user?.id,
+        kind: "Favorite",
       },
       select: {
         id: true,
