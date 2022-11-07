@@ -25,7 +25,7 @@ model User {
   favorites   Favorite[]
   communities Community[]
   curious     Curious[]
-  Reply       Reply[]
+  replies     Reply[]
 }
 
 model Token {

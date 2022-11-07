@@ -14,6 +14,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       userId: user?.id,
       communityId,
     },
+    select: {
+      id: true,
+    },
   });
 
   if (isExists) {

@@ -8,7 +8,7 @@ import { Community } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-interface CommunityForm {
+interface writeForm {
   question: string;
 }
 interface WriteCommunityResponse {
@@ -21,15 +21,15 @@ const Write: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CommunityForm>();
+  } = useForm<writeForm>();
   const [community, { data, loading, error }] =
     useMutation<WriteCommunityResponse>("/api/community");
 
   const router = useRouter();
-  console.log(data);
-  const onValid = (data: CommunityForm) => {
+
+  const onValid = (writeForm: writeForm) => {
     if (loading) return;
-    community(data);
+    community(writeForm);
   };
   useEffect(() => {
     if (data?.ok) {
@@ -38,14 +38,14 @@ const Write: NextPage = () => {
   }, [data, router]);
   return (
     <Layout canGoBack title="Write Post">
-      <form onClick={handleSubmit(onValid)} className="p-4 space-y-4">
+      <form onSubmit={handleSubmit(onValid)} className="p-4 space-y-4">
         <TextArea
           name="question"
           register={register("question", { required: "질문을 입력해주세요." })}
           errorMessage={errors?.question?.message}
           placeholder="Ask a question!"
         />
-        <Button text="Submit" />
+        <Button text={loading ? "Loading..." : "Submit"} />
       </form>
     </Layout>
   );

@@ -9,6 +9,7 @@ import useMutation from "@libs/client/useMutaion";
 import useUser from "@libs/client/useUser";
 import community from "@api/community";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface ReplyForm {
   description: string;
@@ -77,19 +78,19 @@ const CommunityPostDetail: NextPage = () => {
   };
 
   const toggleCurios = () => {
-    if (curiousLoading) return;
+    if (curiousLoading || !data) return;
     // curious create or delete
     curious({});
     // curious mutate
-    console.log(data?.isCurious);
+    console.log(data.isCurious);
     mutate(
       {
-        ...data!,
-        isCurious: !data?.isCurious!,
+        ...data,
         community: {
-          ...data?.community!,
-          _count: { curious: data?.community?._count.curious! + (data?.isCurious! ? -1 : 1) },
+          ...data?.community,
+          _count: { curious: data.community._count.curious + (data.isCurious ? -1 : 1) },
         },
+        isCurious: !data.isCurious,
       },
       false
     );
@@ -101,11 +102,15 @@ const CommunityPostDetail: NextPage = () => {
         <span className="inline-flex my-3 ml-4 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
           동네질문
         </span>
-        <div className="flex mb-3 px-4 cursor-pointer pb-3  border-b items-center space-x-3">
+        <div className="flex mb-3 px-4 pb-3  border-b items-center space-x-3">
           <div className="w-10 h-10 rounded-full bg-slate-300" />
           <div>
             <p className="text-sm font-medium text-gray-700">{data?.community?.user?.name}</p>
-            <p className="text-xs font-medium text-gray-500">View profile &rarr;</p>
+            <Link href={`/users/${data?.community.userId}`}>
+              <p className="text-xs cursor-pointer font-medium text-gray-500">
+                View profile &rarr;
+              </p>
+            </Link>
           </div>
         </div>
         <div>
@@ -118,20 +123,36 @@ const CommunityPostDetail: NextPage = () => {
               onClick={toggleCurios}
               className="flex space-x-2 items-center text-sm hover:cursor-pointer hover:text-orange-500"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
+              {data?.isCurious ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="#b86640"
+                  className="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+              )}
+
               <span>궁금해요 {data?.community?._count?.curious}</span>
             </span>
             <span className="flex space-x-2 items-center text-sm">

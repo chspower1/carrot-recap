@@ -46,6 +46,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       await client.curious.findFirst({
         where: {
           userId: user?.id,
+          communityId,
+        },
+        select: {
+          id: true,
         },
       })
     );
