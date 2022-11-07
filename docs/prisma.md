@@ -171,3 +171,15 @@ enum Kind{
    - 해결 방법
      1. model에 default값을 넣어준다.
      2. required를 해제시킨다.
+
+## select 내부에 where 적용
+
+```prisma
+// schema.prisma
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity", "filteredRelationCount"]
+}
+```
+
+previewFeatures 배열 내에 "filteredRelationCount"를 추가해주면 적용 가능

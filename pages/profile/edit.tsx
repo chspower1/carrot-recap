@@ -8,6 +8,7 @@ import useSWR from "swr";
 import useMutation from "@libs/client/useMutaion";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import useUser from "@libs/client/useUser";
 
 interface EditForm {
   name: string;
@@ -18,7 +19,7 @@ interface EditForm {
 const EditProfile: NextPage = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<EditForm>();
-  const { data: user } = useSWR<ProfileResponse>("/api/users/me");
+  const { user } = useUser();
   const [editProfile, { data: editData, loading: editLoading }] = useMutation("/api/users/edit");
   const onValid = (editForm: EditForm) => {
     console.log(editForm);
@@ -47,15 +48,26 @@ const EditProfile: NextPage = () => {
           label="name"
           name="name"
           type="text"
-          placeholder={user?.profile.name}
+          placeholder={user?.name}
         />
-        <Input
-          register={register(user?.profile.email ? "email" : "phone", { required: true })}
-          label={user?.profile.email ? "Email address" : "Phone number"}
-          name={user?.profile.email ? "email" : "phone"}
-          type={user?.profile.email ? "email" : "phone"}
-          placeholder={user?.profile.email ? user.profile.email! : user?.profile.phone!}
-        />
+        {!user ? (
+          <Input
+            register={register("email", { required: true })}
+            label="loading"
+            name="loading"
+            type="text"
+            placeholder="loading"
+          />
+        ) : (
+          <Input
+            register={register(user?.email ? "email" : "phone", { required: true })}
+            label={user?.email ? "Email address" : "Phone number"}
+            name={user?.email ? "email" : "phone"}
+            type={user?.email ? "email" : "phone"}
+            placeholder={user?.email ? user.email! : user?.phone!}
+          />
+        )}
+
         <Button text="Update profile" />
       </form>
     </Layout>

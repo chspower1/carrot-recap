@@ -7,7 +7,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   const { email, phone } = req.body;
   const user = phone ? { phone } : email ? { email } : null;
   if (!user) return res.status(400).json({ ok: false });
-  const payload = Math.floor(10000 + Math.random() * 900000) + "";
+  const payload = Math.floor(10000 + Math.random() * 1000000) + "";
   const token = await client.token.create({
     data: {
       payload,
@@ -24,25 +24,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       },
     },
   });
-  if (email) {
-    const mailOptions = {
-      from: process.env.MAIL_ID,
-      to: email,
-      subject: "호성마켓 로그인 인증요청",
-      text: `인증코드 : ${payload}`,
-    };
-    const result = await smtpTransport.sendMail(mailOptions, (error, responses) => {
-      if (error) {
-        console.log(error);
-        return null;
-      } else {
-        console.log(responses);
-        return null;
-      }
-    });
-    smtpTransport.close();
-    console.log(result);
-  }
+  // Email 보내기
+  // if (email) {
+  //   const mailOptions = {
+  //     from: process.env.MAIL_ID,
+  //     to: email,
+  //     subject: "호성마켓 로그인 인증요청",
+  //     text: `인증코드 : ${payload}`,
+  //   };
+  //   const result = await smtpTransport.sendMail(mailOptions, (error, responses) => {
+  //     if (error) {
+  //       console.log(error);
+  //       return null;
+  //     } else {
+  //       console.log(responses);
+  //       return null;
+  //     }
+  //   });
+  //   smtpTransport.close();
+  //   console.log(result);
+  // }
   console.log(token);
   return res.json({
     ok: true,
