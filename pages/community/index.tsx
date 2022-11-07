@@ -4,6 +4,7 @@ import FloatingButton from "@components/FloatingButton";
 import Layout from "@components/Layout";
 import useSWR from "swr";
 import { Community } from "@prisma/client";
+import useCoords from "@libs/client/useCoords";
 
 interface HomeCommunity extends Community {
   user: {
@@ -21,7 +22,10 @@ interface CommunityResponse {
 }
 
 const CommunityPage: NextPage = () => {
-  const { data } = useSWR<CommunityResponse>("/api/community");
+  const { latitude, longitude } = useCoords();
+  const { data } = useSWR<CommunityResponse>(
+    `/api/community?latitude=${latitude}&longitude=${longitude}`
+  );
   console.log(data);
   return (
     <Layout hasTabBar title="동네생활">
