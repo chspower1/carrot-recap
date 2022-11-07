@@ -164,3 +164,10 @@ enum Kind{
   Favorite
 }
 ```
+
+## model table을 수정했을때 발생되는 오류
+
+1. 기존에 DB에 있던 Data가 추가되는 column을 갖지 않았을 경우.
+   - 해결 방법
+     1. model에 default값을 넣어준다.
+     2. required를 해제시킨다.

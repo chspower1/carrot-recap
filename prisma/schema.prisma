@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures = ["referentialIntegrity", "filteredRelationCount"]
 }
 
 datasource db {
@@ -22,14 +22,11 @@ model User {
   updateAt       DateTime    @updatedAt
   tokens         Token[]
   products       Product[]
-  favorites      Favorite[]
   communities    Community[]
   curious        Curious[]
   replies        Reply[]
   writtenReviews Review[]    @relation(name: "writtenReviews")
   receiveReviews Review[]    @relation(name: "receiveReviews")
-  sales          Sale[]
-  purchases      Purchase[]
   records        Record[]
 }
 
@@ -43,18 +40,15 @@ model Token {
 }
 
 model Product {
-  id          Int        @id @default(autoincrement())
-  createAt    DateTime   @default(now())
-  updateAt    DateTime   @updatedAt
+  id          Int      @id @default(autoincrement())
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
   userId      Int
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   image       String
   name        String
   price       Int
-  description String     @db.MediumText
-  favorites   Favorite[]
-  sales       Sale[]
-  purchases   Purchase[]
+  description String   @db.MediumText
   records     Record[]
 }
 
@@ -96,40 +90,12 @@ model Review {
   id          Int      @id @default(autoincrement())
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
+  review      String
   createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id])
   createById  Int
   createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id])
   createForId Int
-}
-
-model Favorite {
-  id        Int      @id @default(autoincrement())
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    Int
-  productId Int
-}
-
-model Sale {
-  id        Int      @id @default(autoincrement())
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    Int
-  productId Int
-}
-
-model Purchase {
-  id        Int      @id @default(autoincrement())
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    Int
-  productId Int
+  score       Int
 }
 
 model Record {
