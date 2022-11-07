@@ -24,7 +24,7 @@ interface CommunityResponse {
 const CommunityPage: NextPage = () => {
   const { latitude, longitude } = useCoords();
   const { data } = useSWR<CommunityResponse>(
-    `/api/community?latitude=${latitude}&longitude=${longitude}`
+    latitude && longitude ? `/api/community?latitude=${latitude}&longitude=${longitude}` : null
   );
   console.log(data);
   return (

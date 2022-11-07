@@ -78,9 +78,9 @@ model Reply {
   createAt    DateTime  @default(now())
   updateAt    DateTime  @updatedAt
   description String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  community   Community @relation(fields: [communityId], references: [id])
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId Int
 }
 
@@ -88,8 +88,8 @@ model Curious {
   id          Int       @id @default(autoincrement())
   createAt    DateTime  @default(now())
   updateAt    DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
-  community   Community @relation(fields: [communityId], references: [id])
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId Int
 }

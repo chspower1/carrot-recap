@@ -29,34 +29,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     } = req;
     const [latitude, longitude] = [Number(latitudeStr), Number(longitudeStr)];
     console.log(latitude, longitude);
-    if (latitude && longitude) {
-      const communities = await client.community.findMany({
-        where: {
-          latitude: {
-            gte: latitude - 0.01,
-            lte: latitude + 0.01,
-          },
-          longitude: {
-            gte: longitude - 0.01,
-            lte: longitude + 0.01,
+    const communities = await client.community.findMany({
+      where: {
+        latitude: {
+          gte: latitude - 0.01,
+          lte: latitude + 0.01,
+        },
+        longitude: {
+          gte: longitude - 0.01,
+          lte: longitude + 0.01,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
           },
         },
-        include: {
-          user: {
-            select: {
-              name: true,
-            },
-          },
-          _count: {
-            select: {
-              curious: true,
-              replies: true,
-            },
+        _count: {
+          select: {
+            curious: true,
+            replies: true,
           },
         },
-      });
-      return res.json({ ok: true, communities });
-    }
+      },
+    });
+    return res.json({ ok: true, communities });
   }
 }
 
