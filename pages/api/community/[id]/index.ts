@@ -36,6 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       select: {
         user: {
           select: {
+            id: true,
             name: true,
             avatar: true,
           },

@@ -6,6 +6,9 @@ import useSWR from "swr";
 import { Community } from "@prisma/client";
 
 interface HomeCommunity extends Community {
+  user: {
+    name: string;
+  };
   _count: {
     replies: number;
     curious: number;
@@ -33,8 +36,8 @@ const CommunityPage: NextPage = () => {
                 <span className="text-orange-500 font-medium">Q.</span> {community.question}
               </div>
               <div className="mt-5 px-4 flex items-center justify-between w-full text-gray-500 font-medium text-xs">
-                <span>니꼬</span>
-                <span>18시간 전</span>
+                <span>{community.user.name}</span>
+                <span>{community.createAt + ""}</span>
               </div>
               <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-3 border-b w-full">
                 <span className="flex space-x-2 items-center text-sm">

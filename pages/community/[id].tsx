@@ -15,11 +15,16 @@ interface ReplyForm {
   description: string;
 }
 interface DetailReply {
-  user: { name: string; avator: string };
+  user: {
+    id: number;
+    name: string;
+    avator: string;
+  };
   description: string;
 }
 interface DetailCommunity extends Community {
   user: {
+    id: number;
     name: string;
     avatar: string;
   };
@@ -64,10 +69,10 @@ const CommunityPostDetail: NextPage = () => {
   // form on valid function
   const onValid = (replyForm: ReplyForm) => {
     if (replyLoading || !communityId) return;
-    reset();
     reply(replyForm);
     const newReply = {
       user: {
+        id: user?.id!,
         name: user?.name!,
         avator: user?.avatar!,
       },
@@ -75,6 +80,8 @@ const CommunityPostDetail: NextPage = () => {
     };
     // reply mutate
     mutate({ ...data!, replies: [...data?.replies!, newReply] }, false);
+    // Form reset
+    reset();
   };
 
   const toggleCurios = () => {
@@ -127,7 +134,7 @@ const CommunityPostDetail: NextPage = () => {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="#b86640"
+                  fill="#2f9237"
                   className="w-4 h-4"
                 >
                   <path
@@ -152,7 +159,6 @@ const CommunityPostDetail: NextPage = () => {
                   ></path>
                 </svg>
               )}
-
               <span>궁금해요 {data?.community?._count?.curious}</span>
             </span>
             <span className="flex space-x-2 items-center text-sm">
@@ -174,10 +180,13 @@ const CommunityPostDetail: NextPage = () => {
             </span>
           </div>
         </div>
+        {/* Reply */}
         {data?.replies?.map((reply, index) => (
           <div key={`reply${index}`} className="px-4 my-5 space-y-5">
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-slate-200 rounded-full" />
+              <Link href={`/users/${reply.user.id}`}>
+                <div className="w-8 h-8 bg-slate-200 rounded-full" />
+              </Link>
               <div>
                 <span className="text-sm block font-medium text-gray-700">{reply.user.name}</span>
                 <span className="text-xs text-gray-500 block ">2시간 전</span>

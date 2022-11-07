@@ -24,6 +24,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "GET") {
     const communities = await client.community.findMany({
       include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
         _count: {
           select: {
             curious: true,
