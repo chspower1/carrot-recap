@@ -71,6 +71,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "GET") {
     // Product 목록 추출
     const streams = await client.stream.findMany({
+      take: 5,
       include: {
         user: true,
         product: {

@@ -46,6 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       },
     });
     // 정상 리턴
+
     return res.json({
       ok: true,
       products,
