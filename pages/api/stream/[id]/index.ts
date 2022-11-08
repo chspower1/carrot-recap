@@ -18,6 +18,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       user: true,
     },
   });
+  if (!stream) {
+    return res.status(404).json({ ok: false, message: "해당 라이브는 존재하지 않습니다!" });
+  }
+
   return res.json({
     ok: true,
     stream,

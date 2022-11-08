@@ -4,16 +4,49 @@ import Message from "@components/Message";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import { StreamWithUserAndProduct } from "./index";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import useMutation from "@libs/client/useMutaion";
 interface DetailStreamResponse {
   ok: boolean;
   stream: StreamWithUserAndProduct;
 }
-
+interface MessageForm {
+  message: string;
+}
 const Stream: NextPage = () => {
+  // router
+  const router = useRouter();
+  const { id } = router.query;
+
+  // Fetch Stream
+  const { data } = useSWR<DetailStreamResponse>(id ? `/api/stream/${id}` : null);
+
+  //mutate Message
+  const [sendMessage, { loading, data: sendMessageData }] = useMutation(
+    `/api/stream/${id}/messages`
+  );
+  
+  // React-hook-form
   const {
-    query: { id },
-  } = useRouter();
-  const { data } = useSWR<DetailStreamResponse>(`/api/stream/${id}`);
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<MessageForm>();
+
+  // Form valid
+  const onValid = (messageForm: MessageForm) => {
+    reset();
+    console.log(messageForm);
+  };
+
+  // 해당 Stream이 없을 경우 404
+  useEffect(() => {
+    if (data && !data?.ok) {
+      router.push("/404");
+    }
+  }, [data, router]);
   return (
     <Layout canGoBack>
       <div className="py-10 px-4  space-y-4">
@@ -31,9 +64,13 @@ const Stream: NextPage = () => {
             <Message message="미쳤어" />
           </div>
           <div className="fixed py-2 bg-white  bottom-0 inset-x-0">
-            <div className="flex relative max-w-md items-center  w-full mx-auto">
+            <form
+              onSubmit={handleSubmit(onValid)}
+              className="flex relative max-w-md items-center  w-full mx-auto"
+            >
               <input
                 type="text"
+                {...register("message", { required: true })}
                 className="shadow-sm rounded-full w-full border-gray-300 focus:ring-orange-500 focus:outline-none pr-12 focus:border-orange-500"
               />
               <div className="absolute inset-y-0 flex py-1.5 pr-1.5 right-0">
@@ -41,7 +78,7 @@ const Stream: NextPage = () => {
                   &rarr;
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
