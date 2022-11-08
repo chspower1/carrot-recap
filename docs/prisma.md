@@ -183,3 +183,76 @@ generator client {
 ```
 
 previewFeatures 배열 내에 "filteredRelationCount"를 추가해주면 적용 가능
+
+## seed
+
+: 테스트 데이터를 빠르게 만드는 방법
+
+1. prisma 폴더에 seed.ts 생성
+2. seed.ts 작성
+
+```ts
+import { PrismaClient } from "@prisma/client";
+const client = new PrismaClient();
+function main() {
+  [...Array.from(Array(500).keys())].forEach(async (item) => {
+    await client.stream.create({
+      data: {
+        product: {
+          connect: {
+            id: 8,
+          },
+        },
+        user: {
+          connect: {
+            id: 4,
+          },
+        },
+      },
+    });
+  });
+}
+main();
+```
+
+3. package.json 수정
+
+```json
+{
+  // ...
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
+}
+```
+
+: `npx prisma db seed` 명령어 입력하면 seed.ts 실행
+
+4. ts-node 설치
+5. `npx prisma db seed` 명령 실행, 가짜 데이터 생성 완료
+
+## Pagination
+
+:pagination은 웬만하면 구현하는게 좋다.
+option 중에 take,skip 옵션을 활용하면 페이지네이션 가능
+
+````ts
+await client.stream.findMany({
+      take: 5, //5개만 가져오기
+      skip:5, // 5개 건너 뛰기
+      include: {
+        user: true,
+        product: {
+          select: {
+            name: true,
+            price: true,
+          },
+        },
+      },
+    });
+    ```
+````
+
+5개만 가져오기
+
+## query 기록 보기

@@ -5,52 +5,55 @@ import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   // POST Request
+  //Request Info
+  const {
+    body: { message },
+    query: { id },
+    session: { user },
+  } = req;
+  const streamId = Number(id);
   if (req.method === "POST") {
-    //Request Info
-    const {
-      body: { name, price, description },
-      session: { user },
-    } = req;
-
-    // product 생성
-    const product = await client.product.create({
+    // create message
+    const newMessage = await client.streamMessage.create({
       data: {
-        name,
-        price: +price,
-        description,
-        image: "xx",
         user: {
           connect: {
             id: user?.id,
           },
         },
-      },
-    });
-    //정상 리턴
-    return res.status(200).json({ ok: true, product });
-  }
-  // GET Request
-  if (req.method === "GET") {
-    // Product 목록 추출
-    const products = await client.product.findMany({
-      include: {
-        _count: {
-          select: {
-            records: {
-              where: {
-                kind: "Favorite",
-              },
-            },
+        stream: {
+          connect: {
+            id: streamId,
           },
         },
+        message,
       },
     });
-    // 정상 리턴
+    console.log(newMessage);
+    //정상 리턴
+    return res.json({ ok: true });
+  }
 
-    return res.json({
-      ok: true,
-      products,
+  // GET Request
+  if (req.method === "GET") {
+    const messages = await client.streamMessage.findMany({
+      where: {
+        streamId,
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        id: true,
+        message: true,
+        createAt: true,
+      },
     });
+    return res.json({ ok: true, messages });
   }
 }
 

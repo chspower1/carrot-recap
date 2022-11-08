@@ -13,21 +13,23 @@ datasource db {
 }
 
 model User {
-  id             Int         @id @default(autoincrement())
-  phone          String?     @unique
-  email          String?     @unique
+  id             Int             @id @default(autoincrement())
+  phone          String?         @unique
+  email          String?         @unique
   name           String
   avatar         String?
-  createAt       DateTime    @default(now())
-  updateAt       DateTime    @updatedAt
+  createAt       DateTime        @default(now())
+  updateAt       DateTime        @updatedAt
   tokens         Token[]
   products       Product[]
   communities    Community[]
   curious        Curious[]
   replies        Reply[]
-  writtenReviews Review[]    @relation(name: "writtenReviews")
-  receiveReviews Review[]    @relation(name: "receiveReviews")
+  writtenReviews Review[]        @relation(name: "writtenReviews")
+  receiveReviews Review[]        @relation(name: "receiveReviews")
   records        Record[]
+  streamMessages StreamMessage[]
+  streams        Stream[]
 }
 
 model Token {
@@ -50,6 +52,7 @@ model Product {
   price       Int
   description String   @db.MediumText
   records     Record[]
+  streams     Stream[]
 }
 
 model Community {
@@ -91,9 +94,9 @@ model Review {
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
   review      String
-  createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id])
+  createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id], onDelete: Cascade)
   createById  Int
-  createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id])
+  createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id], onDelete: Cascade)
   createForId Int
   score       Int
 }
@@ -113,4 +116,26 @@ enum Kind {
   Purchase
   Favorite
   Sale
+}
+
+model Stream {
+  id             Int             @id @default(autoincrement())
+  createAt       DateTime        @default(now())
+  updateAt       DateTime        @updatedAt
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId      Int
+  user           User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int?
+  streamMessages StreamMessage[]
+}
+
+model StreamMessage {
+  id       Int      @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  message  String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  stream   Stream   @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  streamId Int
 }

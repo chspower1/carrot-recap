@@ -29,19 +29,11 @@ interface ReviewsResponse {
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  const [logout, { data: logoutData, loading }] = useMutation("api/logout");
   const { user } = useUser();
   const { data: reviews, mutate: mutateReviews } = useSWR<ReviewsResponse>("/api/reviews");
+  // const { data: reviews, mutate: mutateReviews } = useSWR<ReviewsResponse>("/api/reviews");
   console.log(reviews);
-  // 로그아웃 클릭시 발동 함수
-  const handleClickLogout = () => {
-    logout({});
-  };
-  useEffect(() => {
-    if (logoutData?.ok) {
-      router.push("/enter");
-    }
-  }, [logoutData, router]);
+
   return (
     <Layout hasTabBar title="나의 캐럿">
       <div className="px-4">
@@ -52,12 +44,6 @@ const Profile: NextPage = () => {
             <Link href="/profile/edit">
               <div className="text-sm text-gray-700">Edit profile &rarr;</div>
             </Link>
-          </div>
-          <div
-            onClick={handleClickLogout}
-            className="cursor-pointer absolute right-0 p-2 bg-red-500 hover:bg-red-700 text-white text-sm rounded-sm top-2 font-bold"
-          >
-            로그아웃
           </div>
         </div>
         <div className="mt-10 flex justify-around">
