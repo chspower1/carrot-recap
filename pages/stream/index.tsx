@@ -4,6 +4,9 @@ import FloatingButton from "@components/FloatingButton";
 import Layout from "@components/Layout";
 import useSWR from "swr";
 import { Product, Stream, User } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { cls } from "@libs/client/utils";
+import usePagination from "@libs/client/usePagination";
 
 export interface StreamWithUserAndProduct extends Stream {
   user: User;
@@ -13,11 +16,24 @@ export interface StreamWithUserAndProduct extends Stream {
 interface StreamProps {
   ok: boolean;
   streams: StreamWithUserAndProduct[];
+  countStream: number;
 }
 
 const StreamPage: NextPage = () => {
-  const { data } = useSWR<StreamProps>("api/stream");
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data } = useSWR<StreamProps>(`api/stream?page=${currentPage + 1}`);
+  const {
+    currentPage: currentPageGuide,
+    isfirstPage,
+    plusPage,
+    maxPage,
+    isLastPage,
+    handleClickChangePageList,
+    handleClickPage,
+  } = usePagination(data ? data?.countStream : 5);
+  useEffect(() => {
+    setCurrentPage(currentPageGuide);
+  }, [currentPageGuide]);
   return (
     <Layout hasTabBar title="라이브">
       <div className=" divide-y-[1px] space-y-4">
@@ -34,6 +50,30 @@ const StreamPage: NextPage = () => {
             </div>
           </Link>
         ))}
+        <div className="relative flex w-full h-full justify-center items-center gap-4 pt-3">
+          {isfirstPage || (
+            <button className="absolute left-44" onClick={() => handleClickChangePageList("prev")}>
+              ⬅️
+            </button>
+          )}
+          {[1, 2, 3, 4, 5].map((index) => (
+            <button
+              onClick={() => handleClickPage(index)}
+              className={cls(
+                "hover:text-orange-500 w-3",
+                currentPage === index ? "text-orange-400" : ""
+              )}
+              key={index}
+            >
+              {index + plusPage <= maxPage ? index + plusPage : null}
+            </button>
+          ))}
+          {isLastPage || (
+            <button className="absolute right-44" onClick={() => handleClickChangePageList("next")}>
+              ➡️
+            </button>
+          )}
+        </div>
         <FloatingButton href="/stream/create">
           <svg
             className="w-6 h-6"
