@@ -101,3 +101,7 @@ https://stackoverflow.com/questions/37726863/nodejs-difference-between-res-json-
 에 보면 return을 하지않지 않았을때 계속 실행되는 오류가 발생할 가능성이 있다고 이야기 합니다.
 
 위 함수는 그런 위험은 없어보이지만 return을 붙이는게 오히려 더 정확해 보이는데 혹시 제가 모르는 이유가 있는 것일까요?
+
+
+## NextJS 에서의 실시간 환경
+: NextJS에서 serverless로 구축을 하면 실시간 소통을 만들 수 없다. server가 따로 필요하다.

@@ -11,6 +11,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     query: { id },
     session: { user },
   } = req;
+  const streamId = Number(id);
   if (req.method === "POST") {
     // create message
     const newMessage = await client.streamMessage.create({
@@ -22,20 +23,37 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
         stream: {
           connect: {
-            id: Number(id),
+            id: streamId,
           },
         },
         message,
       },
     });
-
+    console.log(newMessage);
     //정상 리턴
     return res.json({ ok: true });
   }
 
   // GET Request
   if (req.method === "GET") {
-    return;
+    const messages = await client.streamMessage.findMany({
+      where: {
+        streamId,
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        id: true,
+        message: true,
+        createAt: true,
+      },
+    });
+    return res.json({ ok: true, messages });
   }
 }
 

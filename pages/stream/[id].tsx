@@ -7,26 +7,45 @@ import { StreamWithUserAndProduct } from "./index";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import useMutation from "@libs/client/useMutaion";
+import useUser from "@libs/client/useUser";
 interface DetailStreamResponse {
   ok: boolean;
   stream: StreamWithUserAndProduct;
+}
+interface DetailStreamMessage {
+  id: number;
+  message: string;
+  createAt: string;
+  user: {
+    id: number;
+    name: string;
+    avatar: string;
+  };
+}
+interface DetailStreamMessageResponse {
+  ok: boolean;
+  messages: DetailStreamMessage[];
 }
 interface MessageForm {
   message: string;
 }
 const Stream: NextPage = () => {
+  // User
+  const { user } = useUser();
   // router
   const router = useRouter();
   const { id } = router.query;
 
   // Fetch Stream
   const { data } = useSWR<DetailStreamResponse>(id ? `/api/stream/${id}` : null);
-
+  const { data: messagesData, mutate: messageMutate } = useSWR<DetailStreamMessageResponse>(
+    id ? `/api/stream/${id}/messages` : null
+  );
   //mutate Message
   const [sendMessage, { loading, data: sendMessageData }] = useMutation(
     `/api/stream/${id}/messages`
   );
-  
+
   // React-hook-form
   const {
     register,
@@ -35,10 +54,29 @@ const Stream: NextPage = () => {
     formState: { errors },
   } = useForm<MessageForm>();
 
-  // Form valid
+  // Message form on Valid function
   const onValid = (messageForm: MessageForm) => {
     reset();
-    console.log(messageForm);
+    messageMutate(
+      {
+        ...messagesData!,
+        messages: [
+          ...messagesData?.messages!,
+          {
+            user: {
+              id: user?.id!,
+              name: user?.name!,
+              avatar: user?.avatar!,
+            },
+            id: 111,
+            message: messageForm.message!,
+            createAt: String(Date.now()),
+          },
+        ],
+      },
+      false
+    );
+    sendMessage(messageForm);
   };
 
   // 해당 Stream이 없을 경우 404
@@ -59,9 +97,13 @@ const Stream: NextPage = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Live Chat</h2>
           <div className="py-10 pb-16 h-[50vh] overflow-y-scroll  px-4 space-y-4">
-            <Message message="Hi how much are you selling them for?" />
-            <Message message="I want ￦20,000" reversed />
-            <Message message="미쳤어" />
+            {messagesData?.messages.map((message) => (
+              <Message
+                key={message.id}
+                message={message.message}
+                reversed={message.user.id === user?.id}
+              />
+            ))}
           </div>
           <div className="fixed py-2 bg-white  bottom-0 inset-x-0">
             <form
