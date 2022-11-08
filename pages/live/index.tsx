@@ -5,7 +5,7 @@ import Layout from "@components/Layout";
 import useSWR from "swr";
 import { Product, Stream, User } from "@prisma/client";
 
-interface StreamWithUserAndProduct extends Stream {
+export interface StreamWithUserAndProduct extends Stream {
   user: User;
   product: Product;
 }
@@ -25,7 +25,12 @@ const Live: NextPage = () => {
           <Link key={stream.id} href={`/live/${stream.id}`}>
             <div className="pt-4 block  px-4">
               <div className="w-full rounded-md shadow-sm bg-slate-300 aspect-video" />
-              <h1 className="text-2xl mt-2 font-bold text-gray-900">{stream.product.name}</h1>
+              <div className="flex justify-between items-end">
+                <h1 className="text-2xl mt-2 font-bold text-gray-900">{stream.product.name}</h1>
+                <span className="text-base mt-2 font-bold text-gray-700">
+                  {stream.product.price} 원
+                </span>
+              </div>
             </div>
           </Link>
         ))}

@@ -39,8 +39,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
           },
         },
       },
+      select: {
+        id: true,
+      },
     });
     //정상 리턴
+    console.log(stream);
     return res.status(200).json({ ok: true, stream });
   }
   // GET Request
@@ -49,7 +53,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     const streams = await client.stream.findMany({
       include: {
         user: true,
-        product: true,
+        product: {
+          select: {
+            name: true,
+            price: true,
+          },
+        },
       },
     });
     // 정상 리턴
