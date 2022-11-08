@@ -6,14 +6,14 @@ import useUser from "@libs/client/useUser";
 import Head from "next/head";
 import useSWR from "swr";
 import { Product } from "@prisma/client";
-interface HomeProduct extends Product {
+export interface ProductWithCount extends Product {
   _count: {
     records: number;
   };
 }
 interface ProductsResponse {
   ok: boolean;
-  products: HomeProduct[];
+  products: ProductWithCount[];
 }
 const Home: NextPage = () => {
   const { user, isLoading } = useUser();

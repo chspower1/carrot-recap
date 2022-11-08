@@ -8,44 +8,61 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "POST") {
     //Request Info
     const {
-      body: { name, price, description },
+      body: { name, price, description, isNew, productId },
       session: { user },
     } = req;
-
-    // product 생성
-    const product = await client.product.create({
-      data: {
-        name,
-        price: +price,
-        description,
-        image: "xx",
-        user: {
-          connect: {
-            id: user?.id,
+    if (isNew) {
+      // product 생성
+      const product = await client.product.create({
+        data: {
+          name,
+          price: +price,
+          description,
+          image: "xx",
+          user: {
+            connect: {
+              id: user?.id,
+            },
           },
         },
-      },
-    });
-    const stream = await client.stream.create({
-      data: {
-        product: {
-          connect: {
-            id: product.id,
+      });
+      const stream = await client.stream.create({
+        data: {
+          product: {
+            connect: {
+              id: product.id,
+            },
+          },
+          user: {
+            connect: {
+              id: user?.id,
+            },
           },
         },
-        user: {
-          connect: {
-            id: user?.id,
+        select: {
+          id: true,
+        },
+      });
+      //정상 리턴
+      console.log(stream);
+      return res.status(200).json({ ok: true, stream });
+    } else {
+      const stream = await client.stream.create({
+        data: {
+          user: {
+            connect: {
+              id: user?.id,
+            },
+          },
+          product: {
+            connect: {
+              id: productId,
+            },
           },
         },
-      },
-      select: {
-        id: true,
-      },
-    });
-    //정상 리턴
-    console.log(stream);
-    return res.status(200).json({ ok: true, stream });
+      });
+      return res.json({ ok: true, stream });
+    }
   }
   // GET Request
   if (req.method === "GET") {

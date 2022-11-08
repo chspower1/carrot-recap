@@ -6,6 +6,7 @@ interface ItemProps {
   price: number;
   comments?: number;
   hearts: number;
+  disableLink?: boolean;
 }
 
 export default function Item({ title, price, comments, hearts, id }: ItemProps) {

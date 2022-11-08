@@ -30,7 +30,7 @@ export default function CreateProduct({ loading, mutate }: CreateProductProps) {
 
   const onValid = (data: UploadProductForm) => {
     if (loading) return;
-    mutate(data);
+    mutate({ ...data, isNew: true });
     reset();
   };
   return (

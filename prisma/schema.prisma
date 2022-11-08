@@ -94,9 +94,9 @@ model Review {
   createAt    DateTime @default(now())
   updateAt    DateTime @updatedAt
   review      String
-  createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id])
+  createBy    User     @relation(name: "writtenReviews", fields: [createById], references: [id], onDelete: Cascade)
   createById  Int
-  createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id])
+  createFor   User     @relation(name: "receiveReviews", fields: [createForId], references: [id], onDelete: Cascade)
   createForId Int
   score       Int
 }
@@ -122,9 +122,9 @@ model Stream {
   id             Int             @id @default(autoincrement())
   createAt       DateTime        @default(now())
   updateAt       DateTime        @updatedAt
-  product        Product         @relation(fields: [productId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId      Int
-  user           User?           @relation(fields: [userId], references: [id])
+  user           User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         Int?
   streamMessages StreamMessage[]
 }
@@ -134,8 +134,8 @@ model StreamMessage {
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   message  String
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
-  stream   Stream   @relation(fields: [streamId], references: [id])
+  stream   Stream   @relation(fields: [streamId], references: [id], onDelete: Cascade)
   streamId Int
 }
