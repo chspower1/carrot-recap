@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const client = new PrismaClient();
 function main() {
-  [...Array.from(Array(500).keys())].forEach(async (item) => {
+  [...Array.from(Array(20).keys())].forEach(async (item) => {
     await client.stream.create({
       data: {
         product: {

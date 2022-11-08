@@ -19,19 +19,21 @@ export default function usePagination(countContents: number) {
     }
   };
   useEffect(() => {
+    if (plusPage === 0) {
+      setIsFirstPage(true);
+    }
+    if (plusPage + 5 >= maxPage) {
+      console.log(plusPage + 5, maxPage);
+      setIsLastPage(true);
+    }
+  }, [plusPage, maxPage]);
+  useEffect(() => {
     const pageCount =
       countContents % 5 === 0
         ? parseInt(countContents / 5 + "")
         : parseInt(countContents / 5 + 1 + "");
     setMaxPage(pageCount);
-  }, []);
-  useEffect(() => {
-    if (plusPage === 0) {
-      setIsFirstPage(true);
-    } else if (plusPage + 5 > maxPage) {
-      setIsLastPage(true);
-    }
-  }, [plusPage]);
+  }, [countContents]);
   return {
     currentPage,
     isfirstPage,

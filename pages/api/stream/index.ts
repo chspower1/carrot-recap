@@ -74,7 +74,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     // Product 목록 추출
     const streams = await client.stream.findMany({
       take: 5,
-      skip: Number(page) * 5,
+      skip: (Number(page) - 1) * 5,
       include: {
         user: true,
         product: {

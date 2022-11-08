@@ -7,6 +7,7 @@ import { Product, Stream, User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { cls } from "@libs/client/utils";
 import usePagination from "@libs/client/usePagination";
+import PageNav from "@components/pageNav";
 
 export interface StreamWithUserAndProduct extends Stream {
   user: User;
@@ -21,7 +22,7 @@ interface StreamProps {
 
 const StreamPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data } = useSWR<StreamProps>(`api/stream?page=${currentPage + 1}`);
+  const { data } = useSWR<StreamProps>(`api/stream?page=${currentPage}`);
   const {
     currentPage: currentPageGuide,
     isfirstPage,
@@ -51,28 +52,15 @@ const StreamPage: NextPage = () => {
           </Link>
         ))}
         <div className="relative flex w-full h-full justify-center items-center gap-4 pt-3">
-          {isfirstPage || (
-            <button className="absolute left-44" onClick={() => handleClickChangePageList("prev")}>
-              ⬅️
-            </button>
-          )}
-          {[1, 2, 3, 4, 5].map((index) => (
-            <button
-              onClick={() => handleClickPage(index)}
-              className={cls(
-                "hover:text-orange-500 w-3",
-                currentPage === index ? "text-orange-400" : ""
-              )}
-              key={index}
-            >
-              {index + plusPage <= maxPage ? index + plusPage : null}
-            </button>
-          ))}
-          {isLastPage || (
-            <button className="absolute right-44" onClick={() => handleClickChangePageList("next")}>
-              ➡️
-            </button>
-          )}
+          <PageNav
+            isfirstPage={isfirstPage}
+            handleClickPage={handleClickPage}
+            handleClickChangePageList={handleClickChangePageList}
+            currentPage={currentPage}
+            plusPage={plusPage}
+            maxPage={maxPage}
+            isLastPage={isLastPage}
+          />
         </div>
         <FloatingButton href="/stream/create">
           <svg
