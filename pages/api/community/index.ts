@@ -33,39 +33,77 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "GET") {
     // Request Info
     const {
-      query: { latitude: latitudeStr, longitude: longitudeStr },
+      query: { latitude: latitudeStr, longitude: longitudeStr, page },
     } = req;
     const [latitude, longitude] = [Number(latitudeStr), Number(longitudeStr)];
 
     // 가까운 커뮤니티글
-    const communities = await client.community.findMany({
-      where: {
-        latitude: {
-          gte: latitude - 0.01,
-          lte: latitude + 0.01,
-        },
-        longitude: {
-          gte: longitude - 0.01,
-          lte: longitude + 0.01,
-        },
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
+    if (latitude && longitude) {
+      const communities = await client.community.findMany({
+        take: 5,
+        skip: (Number(page) - 1) * 5,
+        where: {
+          latitude: {
+            gte: latitude - 0.01,
+            lte: latitude + 0.01,
+          },
+          longitude: {
+            gte: longitude - 0.01,
+            lte: longitude + 0.01,
           },
         },
-        _count: {
-          select: {
-            curious: true,
-            replies: true,
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+          _count: {
+            select: {
+              curious: true,
+              replies: true,
+            },
           },
         },
-      },
-    });
+      });
+      const countCommunity = await client.community.count({
+        where: {
+          latitude: {
+            gte: latitude - 0.01,
+            lte: latitude + 0.01,
+          },
+          longitude: {
+            gte: longitude - 0.01,
+            lte: longitude + 0.01,
+          },
+        },
+      });
 
-    // 정상 리턴
-    return res.json({ ok: true, communities });
+      console.log("위치정보O", communities.length);
+      return res.json({ ok: true, communities, countCommunity });
+    } else {
+      const communities = await client.community.findMany({
+        take: 5,
+        skip: (Number(page) - 1) * 5,
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+          _count: {
+            select: {
+              curious: true,
+              replies: true,
+            },
+          },
+        },
+      });
+      const countCommunity = await client.community.count();
+
+      console.log("위치정보X", communities.length);
+      return res.json({ ok: true, communities, countCommunity });
+    }
   }
 }
 

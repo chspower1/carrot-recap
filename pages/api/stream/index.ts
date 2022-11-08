@@ -4,7 +4,6 @@ import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  // POST Request
   if (req.method === "POST") {
     //Request Info
     const {
@@ -67,11 +66,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       return res.json({ ok: true, stream });
     }
   }
-  // GET Request
+
   if (req.method === "GET") {
-    // Product 목록 추출
+    const {
+      query: { page },
+    } = req;
+    // streams 목록 추출
     const streams = await client.stream.findMany({
       take: 5,
+      skip: (Number(page) - 1) * 5,
       include: {
         user: true,
         product: {
@@ -82,10 +85,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         },
       },
     });
+    const countStream = await client.stream.count();
+    console.log(countStream);
     // 정상 리턴
     return res.json({
       ok: true,
       streams,
+      countStream,
     });
   }
 }

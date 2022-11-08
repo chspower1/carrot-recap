@@ -4,6 +4,10 @@ import FloatingButton from "@components/FloatingButton";
 import Layout from "@components/Layout";
 import useSWR from "swr";
 import { Product, Stream, User } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { cls } from "@libs/client/utils";
+import usePagination from "@libs/client/usePagination";
+import PageNav from "@components/pageNav";
 
 export interface StreamWithUserAndProduct extends Stream {
   user: User;
@@ -13,14 +17,27 @@ export interface StreamWithUserAndProduct extends Stream {
 interface StreamProps {
   ok: boolean;
   streams: StreamWithUserAndProduct[];
+  countStream: number;
 }
 
 const StreamPage: NextPage = () => {
-  const { data } = useSWR<StreamProps>("api/stream");
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data } = useSWR<StreamProps>(`api/stream?page=${currentPage}`);
+  const {
+    currentPage: currentPageGuide,
+    isfirstPage,
+    plusPage,
+    maxPage,
+    isLastPage,
+    handleClickChangePageList,
+    handleClickPage,
+  } = usePagination(data ? data?.countStream : 5, 5);
+  useEffect(() => {
+    setCurrentPage(currentPageGuide);
+  }, [currentPageGuide]);
   return (
     <Layout hasTabBar title="라이브">
-      <div className=" divide-y-[1px] space-y-4">
+      <div className="divide-y-[1px] space-y-4">
         {data?.streams.map((stream) => (
           <Link key={stream.id} href={`/stream/${stream.id}`}>
             <div className="pt-4 block  px-4">
@@ -34,6 +51,15 @@ const StreamPage: NextPage = () => {
             </div>
           </Link>
         ))}
+        <PageNav
+          isfirstPage={isfirstPage}
+          handleClickPage={handleClickPage}
+          handleClickChangePageList={handleClickChangePageList}
+          currentPage={currentPage}
+          plusPage={plusPage}
+          maxPage={maxPage}
+          isLastPage={isLastPage}
+        />
         <FloatingButton href="/stream/create">
           <svg
             className="w-6 h-6"
