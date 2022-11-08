@@ -64,11 +64,11 @@ export default function CreateProduct({ loading, mutate }: CreateProductProps) {
       <Input
         label="Price"
         name="price"
-        type="text"
+        type="number"
         kind="price"
         placeholder="0.00"
         errorMessage={errors.price?.message}
-        register={register("price", { required: "가격을 입력해주세요." })}
+        register={register("price", { required: "가격을 입력해주세요.", valueAsNumber: true })}
       />
       <TextArea
         name="description"

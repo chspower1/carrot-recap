@@ -11,6 +11,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       body: { name, price, description, isNew, productId },
       session: { user },
     } = req;
+    // 새로운 상품으로 stream 생성
     if (isNew) {
       // product 생성
       const product = await client.product.create({
@@ -46,7 +47,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       //정상 리턴
       console.log(stream);
       return res.status(200).json({ ok: true, stream });
-    } else {
+    }
+    // 기존에 있던 상품으로 stream 생성
+    else {
       const stream = await client.stream.create({
         data: {
           user: {
