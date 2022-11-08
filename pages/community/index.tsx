@@ -5,6 +5,9 @@ import Layout from "@components/Layout";
 import useSWR from "swr";
 import { Community } from "@prisma/client";
 import useCoords from "@libs/client/useCoords";
+import { useEffect, useState } from "react";
+import usePagination from "@libs/client/usePagination";
+import PageNav from "@components/pageNav";
 
 interface HomeCommunity extends Community {
   user: {
@@ -19,17 +22,32 @@ interface HomeCommunity extends Community {
 interface CommunityResponse {
   ok: boolean;
   communities: HomeCommunity[];
+  countCommunity: number;
 }
 
 const CommunityPage: NextPage = () => {
   // 현재 위치정보 불러오기
   const { latitude, longitude } = useCoords();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // 위치기반 Communities 불러오기
   const { data } = useSWR<CommunityResponse>(
-    latitude && longitude ? `/api/community?latitude=${latitude}&longitude=${longitude}` : null
+    latitude && longitude
+      ? `/api/community?latitude=${latitude}&longitude=${longitude}&page=${currentPage}`
+      : `/api/community?page=${currentPage}`
   );
-
+  const {
+    currentPage: currentPageGuide,
+    isfirstPage,
+    plusPage,
+    maxPage,
+    isLastPage,
+    handleClickChangePageList,
+    handleClickPage,
+  } = usePagination(data ? data.countCommunity : 5, 5);
+  useEffect(() => {
+    setCurrentPage(currentPageGuide);
+  }, [currentPageGuide]);
   return (
     <Layout hasTabBar title="동네생활">
       <div className="space-y-4 divide-y-[2px]">
@@ -85,6 +103,15 @@ const CommunityPage: NextPage = () => {
             </div>
           </Link>
         ))}
+        <PageNav
+          isfirstPage={isfirstPage}
+          handleClickPage={handleClickPage}
+          handleClickChangePageList={handleClickChangePageList}
+          currentPage={currentPage}
+          plusPage={plusPage}
+          maxPage={maxPage}
+          isLastPage={isLastPage}
+        />
         <FloatingButton href="/community/upload">
           <svg
             className="w-6 h-6"
