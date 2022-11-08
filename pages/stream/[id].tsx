@@ -13,7 +13,7 @@ const Stream: NextPage = () => {
   const {
     query: { id },
   } = useRouter();
-  const { data } = useSWR<DetailStreamResponse>(`/api/live/${id}`);
+  const { data } = useSWR<DetailStreamResponse>(`/api/stream/${id}`);
   return (
     <Layout canGoBack>
       <div className="py-10 px-4  space-y-4">

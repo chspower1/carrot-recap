@@ -27,7 +27,7 @@ const Create: NextPage = () => {
   // fetch products
   const { data: productData } = useSWR<MyProductsRespones>("/api/products/me");
   // mutate
-  const [mutate, { data, loading }] = useMutation("/api/live");
+  const [mutate, { data, loading }] = useMutation("/api/stream");
 
   const handleClickProduct = (productId: number) => {
     mutate({ productId, isNew: false });
@@ -36,11 +36,11 @@ const Create: NextPage = () => {
   //useEffect
   useEffect(() => {
     if (data?.ok) {
-      router.push(`/live/${data?.stream.id}`);
+      router.push(`/stream/${data?.stream.id}`);
     }
   }, [data, router]);
   return (
-    <Layout canGoBack title="Go Live">
+    <Layout canGoBack title="Go Stream">
       <CreateProduct loading={loading} mutate={mutate} />
       <div className="flex flex-col space-y-5 divide-y">
         {productData?.products?.map((product) => (

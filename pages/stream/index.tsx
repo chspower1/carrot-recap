@@ -10,19 +10,19 @@ export interface StreamWithUserAndProduct extends Stream {
   product: Product;
 }
 
-interface LiveProps {
+interface StreamProps {
   ok: boolean;
   streams: StreamWithUserAndProduct[];
 }
 
-const Live: NextPage = () => {
-  const { data } = useSWR<LiveProps>("api/live");
+const StreamPage: NextPage = () => {
+  const { data } = useSWR<StreamProps>("api/stream");
 
   return (
     <Layout hasTabBar title="라이브">
       <div className=" divide-y-[1px] space-y-4">
         {data?.streams.map((stream) => (
-          <Link key={stream.id} href={`/live/${stream.id}`}>
+          <Link key={stream.id} href={`/stream/${stream.id}`}>
             <div className="pt-4 block  px-4">
               <div className="w-full rounded-md shadow-sm bg-slate-300 aspect-video" />
               <div className="flex justify-between items-end">
@@ -34,7 +34,7 @@ const Live: NextPage = () => {
             </div>
           </Link>
         ))}
-        <FloatingButton href="/live/create">
+        <FloatingButton href="/stream/create">
           <svg
             className="w-6 h-6"
             fill="none"
@@ -55,4 +55,4 @@ const Live: NextPage = () => {
   );
 };
 
-export default Live;
+export default StreamPage;
