@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 // Type
-interface UploadProductForm {
+export interface UploadProductForm {
   name: string;
   price: number;
   description: string;

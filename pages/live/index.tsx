@@ -2,16 +2,30 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import FloatingButton from "@components/FloatingButton";
 import Layout from "@components/Layout";
+import useSWR from "swr";
+import { Product, Stream, User } from "@prisma/client";
+
+interface StreamWithUserAndProduct extends Stream {
+  user: User;
+  product: Product;
+}
+
+interface LiveProps {
+  ok: boolean;
+  streams: StreamWithUserAndProduct[];
+}
 
 const Live: NextPage = () => {
+  const { data } = useSWR<LiveProps>("api/live");
+
   return (
     <Layout hasTabBar title="라이브">
       <div className=" divide-y-[1px] space-y-4">
-        {[1, 1, 1, 1, 1, 1, 1].map((_, i) => (
-          <Link key={i} href={`/live/${i}`}>
+        {data?.streams.map((stream) => (
+          <Link key={stream.id} href={`/live/${stream.id}`}>
             <div className="pt-4 block  px-4">
               <div className="w-full rounded-md shadow-sm bg-slate-300 aspect-video" />
-              <h1 className="text-2xl mt-2 font-bold text-gray-900">Galaxy S50</h1>
+              <h1 className="text-2xl mt-2 font-bold text-gray-900">{stream.product.name}</h1>
             </div>
           </Link>
         ))}
