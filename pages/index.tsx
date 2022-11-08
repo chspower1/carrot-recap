@@ -6,6 +6,9 @@ import useUser from "@libs/client/useUser";
 import Head from "next/head";
 import useSWR from "swr";
 import { Product } from "@prisma/client";
+import { useEffect, useState } from "react";
+import usePagination from "@libs/client/usePagination";
+import PageNav from "@components/pageNav";
 export interface ProductWithCount extends Product {
   _count: {
     records: number;
@@ -14,10 +17,24 @@ export interface ProductWithCount extends Product {
 interface ProductsResponse {
   ok: boolean;
   products: ProductWithCount[];
+  countProducts: number;
 }
 const Home: NextPage = () => {
-  const { user, isLoading } = useUser();
-  const { data } = useSWR<ProductsResponse>("/api/products");
+  const { user } = useUser();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data } = useSWR<ProductsResponse>(`/api/products?page=${currentPage}`);
+  const {
+    currentPage: currentPageGuide,
+    isfirstPage,
+    plusPage,
+    maxPage,
+    isLastPage,
+    handleClickChangePageList,
+    handleClickPage,
+  } = usePagination(data ? data?.countProducts : 7, 7);
+  useEffect(() => {
+    setCurrentPage(currentPageGuide);
+  }, [currentPageGuide]);
   return (
     <Layout title="홈" hasTabBar>
       <Head>
@@ -34,6 +51,7 @@ const Home: NextPage = () => {
             hearts={product._count.records}
           />
         ))}
+
         <FloatingButton href="/products/upload">
           <svg
             className="h-6 w-6"
@@ -52,6 +70,15 @@ const Home: NextPage = () => {
           </svg>
         </FloatingButton>
       </div>
+      <PageNav
+        isfirstPage={isfirstPage}
+        handleClickPage={handleClickPage}
+        handleClickChangePageList={handleClickChangePageList}
+        currentPage={currentPage}
+        plusPage={plusPage}
+        maxPage={maxPage}
+        isLastPage={isLastPage}
+      />
     </Layout>
   );
 };

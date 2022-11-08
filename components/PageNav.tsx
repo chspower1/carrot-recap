@@ -19,29 +19,34 @@ export default function PageNav({
   isLastPage,
 }: PageNavProps) {
   return (
-    <>
-      {isfirstPage || (
-        <button className="absolute left-44" onClick={() => handleClickChangePageList("prev")}>
-          ⬅️
-        </button>
-      )}
-      {[1, 2, 3, 4, 5].map((index) => (
-        <button
-          onClick={() => handleClickPage(index)}
-          className={cls(
-            "hover:text-orange-500 w-3",
-            currentPage === index ? "text-orange-400" : ""
-          )}
-          key={index}
-        >
-          {index + plusPage <= maxPage ? index + plusPage : null}
-        </button>
-      ))}
-      {isLastPage || (
-        <button className="absolute right-44" onClick={() => handleClickChangePageList("next")}>
-          ➡️
-        </button>
-      )}
-    </>
+    <div className="flex justify-center items-center w-full">
+      <div className="relative flex h-full justify-center items-center gap-4 pt-3">
+        {isfirstPage || (
+          <button className="absolute left-44" onClick={() => handleClickChangePageList("prev")}>
+            ⬅️
+          </button>
+        )}
+        {[1, 2, 3, 4, 5].map(
+          (index) =>
+            index + plusPage <= maxPage && (
+              <button
+                onClick={() => handleClickPage(index)}
+                className={cls(
+                  "hover:text-orange-500 w-3",
+                  currentPage === index ? "text-orange-400" : ""
+                )}
+                key={index}
+              >
+                {index + plusPage}
+              </button>
+            )
+        )}
+        {isLastPage || (
+          <button className="absolute right-44" onClick={() => handleClickChangePageList("next")}>
+            ➡️
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

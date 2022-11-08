@@ -31,13 +31,13 @@ const StreamPage: NextPage = () => {
     isLastPage,
     handleClickChangePageList,
     handleClickPage,
-  } = usePagination(data ? data?.countStream : 5);
+  } = usePagination(data ? data?.countStream : 5, 5);
   useEffect(() => {
     setCurrentPage(currentPageGuide);
   }, [currentPageGuide]);
   return (
     <Layout hasTabBar title="라이브">
-      <div className=" divide-y-[1px] space-y-4">
+      <div className="divide-y-[1px] space-y-4">
         {data?.streams.map((stream) => (
           <Link key={stream.id} href={`/stream/${stream.id}`}>
             <div className="pt-4 block  px-4">
@@ -51,17 +51,15 @@ const StreamPage: NextPage = () => {
             </div>
           </Link>
         ))}
-        <div className="relative flex w-full h-full justify-center items-center gap-4 pt-3">
-          <PageNav
-            isfirstPage={isfirstPage}
-            handleClickPage={handleClickPage}
-            handleClickChangePageList={handleClickChangePageList}
-            currentPage={currentPage}
-            plusPage={plusPage}
-            maxPage={maxPage}
-            isLastPage={isLastPage}
-          />
-        </div>
+        <PageNav
+          isfirstPage={isfirstPage}
+          handleClickPage={handleClickPage}
+          handleClickChangePageList={handleClickChangePageList}
+          currentPage={currentPage}
+          plusPage={plusPage}
+          maxPage={maxPage}
+          isLastPage={isLastPage}
+        />
         <FloatingButton href="/stream/create">
           <svg
             className="w-6 h-6"
