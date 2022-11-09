@@ -9,7 +9,8 @@ import useMutation from "@libs/client/useMutaion";
 import { cls } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
 import { useEffect } from "react";
-
+import skeletonImg from "../../public/local.jpg";
+import Image from "next/image";
 interface ProductWithUser extends Product {
   user: User;
 }
@@ -27,7 +28,7 @@ const ItemDetail: NextPage = () => {
 
   // Fetch Products
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
-    router.query ? `/api/products/${router.query.id}` : null
+    router.query.id ? `/api/products/${router.query.id}` : null
   );
 
   // Mutation Favorite
@@ -53,7 +54,8 @@ const ItemDetail: NextPage = () => {
     <Layout canGoBack>
       <div className="px-4  py-4">
         <div className="mb-8">
-          <div className="h-96 bg-slate-300" />
+          <Image src={skeletonImg} placeholder="blur" quality={100} alt="product" />
+          {/* <div className="h-96 bg-slate-300" /> */}
           <div className="flex cursor-pointer py-3 border-t border-b items-center space-x-3">
             <div className="w-12 h-12 rounded-full bg-slate-300" />
             <div>

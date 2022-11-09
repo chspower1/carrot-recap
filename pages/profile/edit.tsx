@@ -11,7 +11,8 @@ import { useRouter } from "next/router";
 import useUser from "@libs/client/useUser";
 import { watch } from "fs";
 import { url } from "inspector";
-
+import Image from "next/image";
+import localImage from "../../public/local.jpg";
 interface EditForm {
   avatar: FileList;
   name: string;
@@ -78,9 +79,12 @@ const EditProfile: NextPage = () => {
     <Layout canGoBack title="Edit Profile">
       <form onSubmit={handleSubmit(onValid)} className="py-10 px-4 space-y-4">
         <div className="flex items-center space-x-3">
-          <img
-            src={imagePreview ? imagePreview : user?.avatar}
+          <Image
+            src={imagePreview ? imagePreview : user?.avatar ? user.avatar : localImage}
+            width={44}
+            height={44}
             className="w-14 h-14 rounded-full bg-slate-500 object-cover"
+            alt="user"
           />
           <label
             htmlFor="picture"
