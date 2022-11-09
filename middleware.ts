@@ -8,9 +8,7 @@ export async function middleware(req: NextRequest) {
     password: process.env.COOKIE_PASSWORD!,
   });
   if (!session.user && !req.url.includes("/enter")) {
-    req.nextUrl.searchParams.set("from", req.nextUrl.pathname);
-    req.nextUrl.pathname = "/enter";
-    return NextResponse.redirect(req.nextUrl);
+    return NextResponse.redirect(new URL("/enter", req.url));
   }
 }
 export const config = {

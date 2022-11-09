@@ -36,7 +36,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       query: { latitude: latitudeStr, longitude: longitudeStr, page },
     } = req;
     const [latitude, longitude] = [Number(latitudeStr), Number(longitudeStr)];
-
     // 가까운 커뮤니티글
     if (latitude && longitude) {
       const communities = await client.community.findMany({
