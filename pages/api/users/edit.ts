@@ -7,7 +7,7 @@ import { withApiSession } from "@libs/server/withSession";
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const {
     session: { user },
-    body: { name, email, phone },
+    body: { name, email, phone, avatar },
   } = req;
   console.log("aaaaaaaaaaaaaaaaa", user);
   const newUser = await client.user.update({
@@ -18,6 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       name,
       email,
       phone,
+      avatar,
     },
   });
   console.log(newUser);

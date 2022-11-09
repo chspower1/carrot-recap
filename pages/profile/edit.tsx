@@ -13,7 +13,7 @@ import { watch } from "fs";
 import { url } from "inspector";
 
 interface EditForm {
-  avator: FileList;
+  avatar: FileList;
   name: string;
   email?: string;
   phone?: string;
@@ -25,23 +25,40 @@ const EditProfile: NextPage = () => {
   const [imagePreview, setImagePreview] = useState("");
   const { user } = useUser();
   const [editProfile, { data: editData, loading: editLoading }] = useMutation("/api/users/edit");
-  const avator = watch("avator");
-  const onValid = ({ name, email, phone }: EditForm) => {
+  const avatar = watch("avatar");
+
+  const onValid = async ({ name, email, phone }: EditForm) => {
     console.log(name, email, phone);
-    if (avator && avator.length > 0) {
-      // ask for CFurl
-      editProfile({ name, email, phone, avatorUrl: "" });
+    if (avatar && avatar.length > 0 && user) {
+      const { uploadURL } = await (await fetch("/api/files")).json();
+      const form = new FormData();
+      form.append("file", avatar[0], user.id + "");
+      const {
+        result: { id },
+      } = await (
+        await fetch(uploadURL, {
+          method: "POST",
+          body: form,
+        })
+      ).json();
+      editProfile({
+        name,
+        email,
+        phone,
+        avatar: `${process.env.NEXT_PUBLIC_IMG_URL}/${id}/avatar`,
+      });
     }
     editProfile({ name, email, phone });
   };
+
   useEffect(() => {
-    if (avator && avator.length > 0) {
-      console.log(avator);
-      const file = avator[0];
+    if (avatar && avatar.length > 0) {
+      const file = avatar[0];
       console.log(URL.createObjectURL(file));
       setImagePreview(URL.createObjectURL(file));
     }
-  }, [avator]);
+  }, [avatar]);
+
   useEffect(() => {
     if (editData?.ok) {
       router.push("/profile");
@@ -61,14 +78,17 @@ const EditProfile: NextPage = () => {
     <Layout canGoBack title="Edit Profile">
       <form onSubmit={handleSubmit(onValid)} className="py-10 px-4 space-y-4">
         <div className="flex items-center space-x-3">
-          <img src={imagePreview} className="w-14 h-14 rounded-full bg-slate-500" />
+          <img
+            src={imagePreview ? imagePreview : user?.avatar}
+            className="w-14 h-14 rounded-full bg-slate-500 object-cover"
+          />
           <label
             htmlFor="picture"
             className="cursor-pointer py-2 px-3 border hover:bg-gray-50 border-gray-300 rounded-md shadow-sm text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 text-gray-700"
           >
             Change
             <input
-              {...register("avator")}
+              {...register("avatar")}
               id="picture"
               type="file"
               className="hidden"
