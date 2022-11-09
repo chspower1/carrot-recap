@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { Product } from "@prisma/client";
 import { useEffect, useState } from "react";
 import usePagination from "@libs/client/usePagination";
-import PageNav from "@components/pageNav";
+import PageNav from "@components/PageNav";
 export interface ProductWithCount extends Product {
   _count: {
     records: number;
@@ -43,6 +43,7 @@ const Home: NextPage = () => {
       <div className="flex flex-col space-y-5 divide-y">
         {data?.products?.map((product) => (
           <Item
+            image={product.image}
             id={product.id}
             key={product.id}
             title={product.name}

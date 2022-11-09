@@ -8,13 +8,7 @@ interface UserWithOk {
   profile: User;
 }
 
-export default function useUser() {
-  const { data, error } = useSWR<UserWithOk>("/api/users/me");
-  const router = useRouter();
-  useEffect(() => {
-    if (data && !data.ok) {
-      router.replace("/enter");
-    }
-  }, [data, router]);
+export default async function useUser() {
+  const { data, error } = await useSWR<UserWithOk>("/api/users/me");
   return { user: data?.profile, isLoading: !data && !error };
 }

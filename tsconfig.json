@@ -32,6 +32,9 @@
       "@styles/*": [
         "styles/*"
       ],
+      "@public/*": [
+        "public/*"
+      ]
     }
   },
   "include": [

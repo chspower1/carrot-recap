@@ -7,7 +7,7 @@ import { Community } from "@prisma/client";
 import useCoords from "@libs/client/useCoords";
 import { useEffect, useState } from "react";
 import usePagination from "@libs/client/usePagination";
-import PageNav from "@components/pageNav";
+import PageNav from "@components/PageNav";
 
 interface HomeCommunity extends Community {
   user: {

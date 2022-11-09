@@ -4,10 +4,12 @@ import Message from "@components/Message";
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import { StreamWithUserAndProduct } from "./index";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useMutation from "@libs/client/useMutaion";
 import useUser from "@libs/client/useUser";
+import Image from "next/image";
+import localImage from "@public/local.jpg";
 interface DetailStreamResponse {
   ok: boolean;
   stream: StreamWithUserAndProduct;
@@ -68,7 +70,7 @@ const Stream: NextPage = () => {
               name: user?.name!,
               avatar: user?.avatar!,
             },
-            id: 111,
+            id: Math.floor(10000 + Math.random() * 1000000),
             message: messageForm.message!,
             createAt: String(Date.now()),
           },
@@ -87,8 +89,15 @@ const Stream: NextPage = () => {
   }, [data, router]);
   return (
     <Layout canGoBack>
-      <div className="py-10 px-4  space-y-4">
-        <div className="w-full rounded-md shadow-sm bg-slate-300 aspect-video" />
+      <div className="py-10 px-4 space-y-4">
+        <div className="relative w-full rounded-md shadow-sm aspect-video border-gray-200 border-2">
+          <Image
+            src={data?.stream.product.image ? data?.stream.product.image : localImage}
+            fill
+            alt="stream"
+            className="object-contain"
+          />
+        </div>
         <div className="mt-5">
           <h1 className="text-3xl font-bold text-gray-900">{data?.stream?.product?.name}</h1>
           <span className="text-2xl block mt-3 text-gray-900">{data?.stream?.product?.price}</span>
