@@ -6,7 +6,7 @@ import { withApiSession } from "@libs/server/withSession";
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   //Request Info
   const {
-    body: { name, price, description },
+    body: { name, price, description, image },
     session: { user },
     query: { page },
   } = req;
@@ -18,7 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
         name,
         price: +price,
         description,
-        image: "xx",
+        image,
         user: {
           connect: {
             id: user?.id,

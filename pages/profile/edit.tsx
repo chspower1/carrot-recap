@@ -13,6 +13,7 @@ import { watch } from "fs";
 import { url } from "inspector";
 import Image from "next/image";
 import localImage from "../../public/local.jpg";
+import useImageUpload from "@libs/client/useImageUpload";
 interface EditForm {
   avatar: FileList;
   name: string;
@@ -22,6 +23,7 @@ interface EditForm {
 
 const EditProfile: NextPage = () => {
   const router = useRouter();
+  const { imageUpload } = useImageUpload();
   const { register, handleSubmit, watch, setValue } = useForm<EditForm>();
   const [imagePreview, setImagePreview] = useState("");
   const { user } = useUser();
@@ -31,17 +33,11 @@ const EditProfile: NextPage = () => {
   const onValid = async ({ name, email, phone }: EditForm) => {
     console.log(name, email, phone);
     if (avatar && avatar.length > 0 && user) {
-      const { uploadURL } = await (await fetch("/api/files")).json();
-      const form = new FormData();
-      form.append("file", avatar[0], user.id + "");
-      const {
-        result: { id },
-      } = await (
-        await fetch(uploadURL, {
-          method: "POST",
-          body: form,
-        })
-      ).json();
+      const { id } = await imageUpload({
+        image: avatar,
+        userId: user.id,
+        category: "profile",
+      });
       editProfile({
         name,
         email,

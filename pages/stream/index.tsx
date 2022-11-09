@@ -7,8 +7,9 @@ import { Product, Stream, User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { cls } from "@libs/client/utils";
 import usePagination from "@libs/client/usePagination";
-import PageNav from "@components/pageNav";
-
+import PageNav from "@components/PageNav";
+import Image from "next/image";
+import localImage from "@public/local.jpg";
 export interface StreamWithUserAndProduct extends Stream {
   user: User;
   product: Product;
@@ -32,6 +33,9 @@ const StreamPage: NextPage = () => {
     handleClickChangePageList,
     handleClickPage,
   } = usePagination(data ? data?.countStream : 5, 5);
+
+  console.log(data);
+
   useEffect(() => {
     setCurrentPage(currentPageGuide);
   }, [currentPageGuide]);
@@ -41,7 +45,14 @@ const StreamPage: NextPage = () => {
         {data?.streams.map((stream) => (
           <Link key={stream.id} href={`/stream/${stream.id}`}>
             <div className="pt-4 block  px-4">
-              <div className="w-full rounded-md shadow-sm bg-slate-300 aspect-video" />
+              <div className="relative w-full rounded-md shadow-sm aspect-video border-gray-200 border-2">
+                <Image
+                  src={stream.product.image ? stream.product.image : localImage}
+                  fill
+                  alt="stream"
+                  className="object-contain"
+                />
+              </div>
               <div className="flex justify-between items-end">
                 <h1 className="text-2xl mt-2 font-bold text-gray-900">{stream.product.name}</h1>
                 <span className="text-base mt-2 font-bold text-gray-700">

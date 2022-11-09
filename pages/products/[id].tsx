@@ -42,7 +42,7 @@ const ItemDetail: NextPage = () => {
     boundMutate({ ...data, isLiked: !data?.isLiked }, false);
     toggleFavorite({});
   };
-
+  console.log(data);
   // 존재하지 않는 상품일 경우 404 (수정요망)
   // useEffect(() => {
   //   if (data?.message) {
@@ -54,7 +54,15 @@ const ItemDetail: NextPage = () => {
     <Layout canGoBack>
       <div className="px-4  py-4">
         <div className="mb-8">
-          <Image src={skeletonImg} placeholder="blur" quality={100} alt="product" />
+          <div className="relative w-full h-[400px]">
+            <Image
+              src={data?.product.image ? data.product.image : skeletonImg}
+              fill
+              alt="Product Image"
+              className="object-contain"
+              quality={100}
+            />
+          </div>
           {/* <div className="h-96 bg-slate-300" /> */}
           <div className="flex cursor-pointer py-3 border-t border-b items-center space-x-3">
             <div className="w-12 h-12 rounded-full bg-slate-300" />

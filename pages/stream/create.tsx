@@ -48,6 +48,7 @@ const Create: NextPage = () => {
             <Item
               disableLink={true}
               id={product.id}
+              image={product.image}
               title={product.name}
               price={product.price}
               comments={1}

@@ -7,7 +7,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   if (req.method === "POST") {
     //Request Info
     const {
-      body: { name, price, description, isNew, productId },
+      body: { name, price, description, isNew, productId, image },
       session: { user },
     } = req;
     // 새로운 상품으로 stream 생성
@@ -18,7 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
           name,
           price: +price,
           description,
-          image: "xx",
+          image,
           user: {
             connect: {
               id: user?.id,
@@ -81,6 +81,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
           select: {
             name: true,
             price: true,
+            image: true,
           },
         },
       },
