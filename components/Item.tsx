@@ -8,7 +8,7 @@ interface ItemProps {
   comments?: number;
   hearts: number;
   disableLink?: boolean;
-  image?: string;
+  image?: string | null;
 }
 
 export default function Item({ title, price, comments, hearts, id, image }: ItemProps) {
