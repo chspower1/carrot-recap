@@ -15,7 +15,7 @@ export default function Blog({
   return (
     <Layout title="Blog" seoTitle="Blog">
       <>
-        <div>안녕하세요</div>
+        <div>안녕하세요zz</div>
         {blogPosts.map((post, index) => (
           <div key={index}>
             <div>{post.title}</div>
