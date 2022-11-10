@@ -4,11 +4,13 @@ import Item from "@components/Item";
 import Layout from "@components/Layout";
 import useUser from "@libs/client/useUser";
 import Head from "next/head";
-import useSWR from "swr";
+import useSWR, { SWRConfig } from "swr";
 import { Product } from "@prisma/client";
 import { useEffect, useState } from "react";
 import usePagination from "@libs/client/usePagination";
 import PageNav from "@components/PageNav";
+import client from "@libs/server/client";
+
 export interface ProductWithCount extends Product {
   _count: {
     records: number;
@@ -84,4 +86,38 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+const Page: NextPage<ProductsResponse> = ({ products }) => {
+  return (
+    <SWRConfig
+      value={{
+        fallback: {
+          "/api/products?page=1": { products },
+        },
+      }}
+    >
+      <Home />
+    </SWRConfig>
+  );
+};
+
+export async function getServerSideProps() {
+  const products = await client.product.findMany({
+    take: 7,
+    skip: 0,
+    include: {
+      _count: {
+        select: {
+          records: {
+            where: {
+              kind: "Favorite",
+            },
+          },
+        },
+      },
+    },
+  });
+  return {
+    props: { products: JSON.parse(JSON.stringify(products)) },
+  };
+}
+export default Page;
